@@ -1,0 +1,78 @@
+name: gym-erp
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            args:
+                WWWUSER: ${WWWUSER:-1000}
+                WWWGROUP: ${WWWGROUP:-1000}
+        image: gym-erp-app
+        container_name: gym_erp_app
+        restart: no
+        working_dir: /var/www/html
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./:/var/www/html
+        networks:
+            - gym_erp_network
+        depends_on:
+            - mysql
+
+    webserver:
+        image: nginx:alpine
+        container_name: gym_erp_webserver
+        restart: no
+        ports:
+            - "${APP_PORT:-8001}:80"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+        networks:
+            - gym_erp_network
+        depends_on:
+            - app
+
+    mysql:
+        image: mysql:8.0
+        container_name: gym_erp_mysql
+        restart: no
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+            MYSQL_DATABASE: ${DB_DATABASE:-gym_erp}
+        ports:
+            - "${FORWARD_DB_PORT:-3307}:3306"
+        volumes:
+            - gym_erp_mysql_data:/var/lib/mysql
+        networks:
+            - gym_erp_network
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-secret}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    phpmyadmin:
+        image: phpmyadmin:latest
+        container_name: gym_erp_phpmyadmin
+        restart: no
+        ports:
+            - "${FORWARD_PHPMYADMIN_PORT:-8081}:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_USER: root
+            PMA_PASSWORD: ${DB_PASSWORD:-secret}
+        networks:
+            - gym_erp_network
+        depends_on:
+            - mysql
+
+networks:
+    gym_erp_network:
+        driver: bridge
+
+volumes:
+    gym_erp_mysql_data:
+        driver: local

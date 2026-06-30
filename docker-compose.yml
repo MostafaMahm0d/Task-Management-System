@@ -1,0 +1,78 @@
+name: task-management-system
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            args:
+                WWWUSER: ${WWWUSER:-1000}
+                WWWGROUP: ${WWWGROUP:-1000}
+        image: task-management-system-app
+        container_name: task_app
+        restart: no
+        working_dir: /var/www/html
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./:/var/www/html
+        networks:
+            - task_network
+        depends_on:
+            - mysql
+
+    webserver:
+        image: nginx:alpine
+        container_name: task_webserver
+        restart: no
+        ports:
+            - "${APP_PORT:-8000}:80"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+        networks:
+            - task_network
+        depends_on:
+            - app
+
+    mysql:
+        image: mysql:8.4
+        container_name: task_mysql
+        restart: no
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+            MYSQL_DATABASE: ${DB_DATABASE:-task_management_system}
+        ports:
+            - "${FORWARD_DB_PORT:-3306}:3306"
+        volumes:
+            - task_mysql_data:/var/lib/mysql
+        networks:
+            - task_network
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-secret}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+    phpmyadmin:
+        image: phpmyadmin:latest
+        container_name: task_phpmyadmin
+        restart: no
+        ports:
+            - "${FORWARD_PHPMYADMIN_PORT:-8080}:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_USER: root
+            PMA_PASSWORD: ${DB_PASSWORD:-secret}
+        networks:
+            - task_network
+        depends_on:
+            - mysql
+
+networks:
+    task_network:
+        driver: bridge
+
+volumes:
+    task_mysql_data:
+        driver: local
