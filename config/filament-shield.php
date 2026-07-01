@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Filament\Central\Resources\Tenants\TenantResource;
-use App\Filament\Central\Resources\Users\UserResource;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
 use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
@@ -179,9 +178,11 @@ return [
                 'update',
                 'delete',
             ],
-            TenantResource::class=>[
-                'CreateSuperAdmin:Tenant',
-            ]
+            TenantResource::class => [
+                'createSuperAdmin',
+                'manageUsers',
+                'suspend',
+            ],
         ],
         'exclude' => [
             //

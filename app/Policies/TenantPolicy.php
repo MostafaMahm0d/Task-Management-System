@@ -12,40 +12,78 @@ class TenantPolicy
 {
     use HandlesAuthorization;
 
-
-
-    public function viewAny(AuthUser $user): bool
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('ViewAny:Tenant');
+        return $authUser->can('ViewAny:Tenant');
     }
 
-    public function view(AuthUser $user, Tenant $tenant): bool
+    public function view(AuthUser $authUser, Tenant $tenant): bool
     {
-        return $user->can('View:Tenant');
+        return $authUser->can('View:Tenant');
     }
 
-    public function create(AuthUser $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('Create:Tenant');
+        return $authUser->can('Create:Tenant');
     }
 
-    public function update(AuthUser $user, Tenant $tenant): bool
+    public function update(AuthUser $authUser, Tenant $tenant): bool
     {
-        return $user->can('Update:Tenant');
+        return $authUser->can('Update:Tenant');
     }
 
-    public function delete(AuthUser $user, Tenant $tenant): bool
+    public function delete(AuthUser $authUser, Tenant $tenant): bool
     {
-        return $user->can('Delete:Tenant');
+        return $authUser->can('Delete:Tenant');
     }
 
-    public function deleteAny(AuthUser $user): bool
+    public function deleteAny(AuthUser $authUser): bool
     {
-        return $user->can('DeleteAny:Tenant');
+        return $authUser->can('DeleteAny:Tenant');
     }
 
-    public function createSuperAdmin(AuthUser $user, Tenant $tenant): bool
+    public function restore(AuthUser $authUser, Tenant $tenant): bool
     {
-        return $user->can('CreateSuperAdmin:Tenant');
+        return $authUser->can('Restore:Tenant');
+    }
+
+    public function forceDelete(AuthUser $authUser, Tenant $tenant): bool
+    {
+        return $authUser->can('ForceDelete:Tenant');
+    }
+
+    public function forceDeleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('ForceDeleteAny:Tenant');
+    }
+
+    public function restoreAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('RestoreAny:Tenant');
+    }
+
+    public function replicate(AuthUser $authUser, Tenant $tenant): bool
+    {
+        return $authUser->can('Replicate:Tenant');
+    }
+
+    public function reorder(AuthUser $authUser): bool
+    {
+        return $authUser->can('Reorder:Tenant');
+    }
+
+    public function createSuperAdmin(AuthUser $authUser, Tenant $tenant): bool
+    {
+        return $authUser->can('CreateSuperAdmin:Tenant');
+    }
+
+    public function manageUsers(AuthUser $authUser, Tenant $tenant): bool
+    {
+        return $authUser->can('ManageUsers:Tenant');
+    }
+
+    public function suspend(AuthUser $authUser, Tenant $tenant): bool
+    {
+        return $authUser->can('Suspend:Tenant');
     }
 }

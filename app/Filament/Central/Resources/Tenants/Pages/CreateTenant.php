@@ -4,6 +4,7 @@ namespace App\Filament\Central\Resources\Tenants\Pages;
 
 use App\Filament\Central\Resources\Tenants\TenantResource;
 use App\Models\Tenant;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,5 +25,37 @@ class CreateTenant extends CreateRecord
         }
 
         return $tenant;
+    }
+
+    protected function afterCreate(): void
+    {
+        /** @var Tenant $tenant */
+        $tenant = $this->getRecord()->fresh();
+
+        if (! $tenant->initial_super_admin_password) {
+            return;
+        }
+
+        try {
+            $password = decrypt($tenant->initial_super_admin_password);
+        } catch (\Throwable) {
+            $tenant->forceFill(['initial_super_admin_password' => null])->save();
+
+            return;
+        }
+
+        Notification::make()
+            ->title('Tenant super admin email')
+            ->body("super-admin@{$tenant->id}.local")
+            ->success()
+            ->persistent()
+            ->send();
+
+        Notification::make()
+            ->title('Tenant super admin password')
+            ->body("{$password}\n\nAlso visible on this tenant's page until the password is changed.")
+            ->success()
+            ->persistent()
+            ->send();
     }
 }

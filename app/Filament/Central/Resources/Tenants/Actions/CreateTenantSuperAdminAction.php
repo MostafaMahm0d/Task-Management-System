@@ -34,16 +34,22 @@ class CreateTenantSuperAdminAction
             ->action(function (array $data, $record): void {
                 tenancy()->initialize($record);
 
-                User::updateOrCreate(
+                $user = User::updateOrCreate(
                     ['email' => $data['email']],
                     [
                         'name' => $data['name'],
                         'password' => $data['password'],
                         'email_verified_at' => now(),
                     ]
-                )->assignRole(config('filament-shield.super_admin.name'));
+                );
+                $user->is_protected = true;
+                $user->save();
+                $user->assignRole(config('filament-shield.super_admin.name'));
 
                 tenancy()->end();
+
+                $record->initial_super_admin_password = encrypt($data['password']);
+                $record->save();
             });
     }
 }

@@ -22,8 +22,7 @@ class TenantForm
                 TextInput::make('domain')
                     ->label('Domain')
                     ->required()
-                    ->maxLength(255)
-                    ->dehydrated(false),
+                    ->maxLength(255),
             ]);
     }
 }

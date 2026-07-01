@@ -17,8 +17,8 @@ class TenantsDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            ShieldSeeder::class,
             RolesAndPermissionsSeeder::class,
+            ShieldSeeder::class,
         ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\PreventAccessIfTenantSuspended;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -50,6 +51,7 @@ class TenantPanelProvider extends PanelProvider
                 AddQueuedCookiesToResponse::class,
                 InitializeTenancyByDomain::class,
                 PreventAccessFromCentralDomains::class,
+                PreventAccessIfTenantSuspended::class,
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
