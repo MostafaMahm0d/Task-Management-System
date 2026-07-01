@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 use Stancl\JobPipeline\JobPipeline;
 use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
-use Livewire\Livewire;
+
 class TenancyServiceProvider extends ServiceProvider
 {
     // By default, no namespace is used to support the callable array syntax.
@@ -27,7 +29,7 @@ class TenancyServiceProvider extends ServiceProvider
                 JobPipeline::make([
                     Jobs\CreateDatabase::class,
                     Jobs\MigrateDatabase::class,
-                    // Jobs\SeedDatabase::class,
+                    Jobs\SeedDatabase::class,
 
                     // Your own jobs to prepare the tenant.
                     // Provision API keys, create S3 buckets, anything you want!
@@ -104,6 +106,7 @@ class TenancyServiceProvider extends ServiceProvider
         $this->mapLivewireUpdateRoute();
         $this->makeTenancyMiddlewareHighestPriority();
     }
+
     /**
      * Livewire's update endpoint is registered globally and isn't covered by
      * a Filament panel's own middleware, so it never initializes tenancy by
@@ -122,6 +125,7 @@ class TenancyServiceProvider extends ServiceProvider
                 ->middleware(['web', 'universal', Middleware\InitializeTenancyByDomain::class]);
         });
     }
+
     protected function bootEvents()
     {
         foreach ($this->events() as $event => $listeners) {
@@ -159,7 +163,7 @@ class TenancyServiceProvider extends ServiceProvider
         ];
 
         foreach (array_reverse($tenancyMiddleware) as $middleware) {
-            $this->app[\Illuminate\Contracts\Http\Kernel::class]->prependToMiddlewarePriority($middleware);
+            $this->app[Kernel::class]->prependToMiddlewarePriority($middleware);
         }
     }
 }

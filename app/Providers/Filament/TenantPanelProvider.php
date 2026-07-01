@@ -30,6 +30,8 @@ class TenantPanelProvider extends PanelProvider
             ->id('app')
             ->path('app')
             ->login()
+            ->passwordReset()
+            ->emailVerification()
             ->colors([
                 'primary' => Color::Indigo,
             ])
