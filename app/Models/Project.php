@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['name', 'description', 'owner_id'])]
 class Project extends Model
@@ -28,8 +29,21 @@ class Project extends Model
             ->withTimestamps();
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function isMember(User $user): bool
     {
         return $this->owner_id === $user->id || $this->members()->whereKey($user->id)->exists();
+    }
+
+    /**
+     * @return array<int>
+     */
+    public function assignableUserIds(): array
+    {
+        return [$this->owner_id, ...$this->members()->pluck('users.id')->all()];
     }
 }

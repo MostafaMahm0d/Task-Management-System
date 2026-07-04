@@ -1,0 +1,88 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Policies;
+
+use App\Models\Task;
+use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
+
+class TaskPolicy
+{
+    use HandlesAuthorization;
+
+    public function viewAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('ViewAny:Task');
+    }
+
+    public function view(AuthUser $authUser, Task $task): bool
+    {
+        if (! $authUser->can('View:Task')) {
+            return false;
+        }
+
+        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+    }
+
+    public function create(AuthUser $authUser): bool
+    {
+        return $authUser->can('Create:Task');
+    }
+
+    public function update(AuthUser $authUser, Task $task): bool
+    {
+        if (! $authUser->can('Update:Task')) {
+            return false;
+        }
+
+        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+    }
+
+    public function delete(AuthUser $authUser, Task $task): bool
+    {
+        if (! $authUser->can('Delete:Task')) {
+            return false;
+        }
+
+        return $authUser->hasRole('tenant_admin')
+            || $task->reporter_id === $authUser->id
+            || $task->project->owner_id === $authUser->id;
+    }
+
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:Task');
+    }
+
+    public function restore(AuthUser $authUser, Task $task): bool
+    {
+        return $authUser->can('Restore:Task');
+    }
+
+    public function forceDelete(AuthUser $authUser, Task $task): bool
+    {
+        return $authUser->can('ForceDelete:Task');
+    }
+
+    public function forceDeleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('ForceDeleteAny:Task');
+    }
+
+    public function restoreAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('RestoreAny:Task');
+    }
+
+    public function replicate(AuthUser $authUser, Task $task): bool
+    {
+        return $authUser->can('Replicate:Task');
+    }
+
+    public function reorder(AuthUser $authUser): bool
+    {
+        return $authUser->can('Reorder:Task');
+    }
+}

@@ -18,14 +18,20 @@ class RolesAndPermissionsSeeder extends Seeder
                 'project.create', 'task.assign', 'task.move', 'report.view',
                 'ViewAny:Project', 'View:Project', 'Create:Project', 'Update:Project', 'Delete:Project', 'DeleteAny:Project',
                 'ViewAny:User', 'View:User', 'Create:User', 'Update:User', 'Delete:User', 'DeleteAny:User',
+                'ViewAny:Task', 'View:Task', 'Create:Task', 'Update:Task', 'Delete:Task', 'DeleteAny:Task',
+                'ViewAny:Label', 'View:Label', 'Create:Label', 'Update:Label', 'Delete:Label', 'DeleteAny:Label',
             ],
             'project_manager' => [
                 'project.create', 'task.assign', 'task.move', 'report.view',
                 'ViewAny:Project', 'View:Project', 'Create:Project', 'Update:Project',
+                'ViewAny:Task', 'View:Task', 'Create:Task', 'Update:Task',
+                'ViewAny:Label', 'View:Label', 'Create:Label', 'Update:Label',
             ],
             'employee' => [
                 'task.move', 'report.view',
                 'ViewAny:Project', 'View:Project',
+                'ViewAny:Task', 'View:Task', 'Update:Task',
+                'ViewAny:Label', 'View:Label',
             ],
         ];
 

@@ -7,6 +7,7 @@ use App\Filament\Tenant\Resources\Projects\Pages\EditProject;
 use App\Filament\Tenant\Resources\Projects\Pages\ListProjects;
 use App\Filament\Tenant\Resources\Projects\Pages\ViewProject;
 use App\Filament\Tenant\Resources\Projects\RelationManagers\MembersRelationManager;
+use App\Filament\Tenant\Resources\Projects\RelationManagers\TasksRelationManager;
 use App\Filament\Tenant\Resources\Projects\Schemas\ProjectForm;
 use App\Filament\Tenant\Resources\Projects\Schemas\ProjectInfolist;
 use App\Filament\Tenant\Resources\Projects\Tables\ProjectsTable;
@@ -60,6 +61,7 @@ class ProjectResource extends Resource
     {
         return [
             MembersRelationManager::class,
+            TasksRelationManager::class,
         ];
     }
 
