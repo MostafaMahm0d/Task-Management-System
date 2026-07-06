@@ -20,5 +20,6 @@ Route::prefix('v1')
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/me', [AuthController::class, 'me']);
             Route::apiResource('tasks', TaskController::class);
+            Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
         });
     });

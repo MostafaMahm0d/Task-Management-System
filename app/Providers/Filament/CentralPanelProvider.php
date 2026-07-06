@@ -29,6 +29,7 @@ class CentralPanelProvider extends PanelProvider
             ->default()
             ->id('central')
             ->path('central')
+            ->viteTheme('resources/css/filament/central/theme.css')
             ->login()
             ->passwordReset()
             ->emailVerification()

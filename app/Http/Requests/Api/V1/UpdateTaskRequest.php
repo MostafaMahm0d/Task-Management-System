@@ -39,9 +39,7 @@ class UpdateTaskRequest extends FormRequest
             ],
             'title' => ['sometimes', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'status' => ['sometimes', Rule::in([
-                Task::STATUS_TODO, Task::STATUS_IN_PROGRESS, Task::STATUS_IN_REVIEW, Task::STATUS_DONE, Task::STATUS_CANCELLED,
-            ])],
+            'status_id' => ['sometimes', Rule::exists('statuses', 'id')],
             'priority' => ['sometimes', Rule::in([
                 Task::PRIORITY_LOW, Task::PRIORITY_MEDIUM, Task::PRIORITY_HIGH, Task::PRIORITY_URGENT,
             ])],

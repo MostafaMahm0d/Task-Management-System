@@ -26,14 +26,10 @@ class TasksTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('status')
+                TextColumn::make('status.name')
+                    ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        Task::STATUS_DONE => 'success',
-                        Task::STATUS_IN_PROGRESS, Task::STATUS_IN_REVIEW => 'info',
-                        Task::STATUS_CANCELLED => 'danger',
-                        default => 'gray',
-                    })
+                    ->color(fn (Task $record): string => $record->status->color)
                     ->sortable(),
 
                 TextColumn::make('priority')
@@ -60,14 +56,9 @@ class TasksTable
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('status')
-                    ->options([
-                        Task::STATUS_TODO => 'To Do',
-                        Task::STATUS_IN_PROGRESS => 'In Progress',
-                        Task::STATUS_IN_REVIEW => 'In Review',
-                        Task::STATUS_DONE => 'Done',
-                        Task::STATUS_CANCELLED => 'Cancelled',
-                    ]),
+                SelectFilter::make('status_id')
+                    ->label('Status')
+                    ->relationship('status', 'name'),
 
                 SelectFilter::make('priority')
                     ->options([

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Resources\Tasks\RelationManagers;
 
+use App\Models\Task;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
@@ -29,8 +30,10 @@ class DependsOnRelationManager extends RelationManager
                 TextColumn::make('title')
                     ->searchable(),
 
-                TextColumn::make('status')
-                    ->badge(),
+                TextColumn::make('status.name')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (Task $record): string => $record->status->color),
             ])
             ->headerActions([
                 AttachAction::make()

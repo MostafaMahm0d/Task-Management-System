@@ -19,7 +19,11 @@ class TaskResource extends JsonResource
             'project_id' => $this->project_id,
             'title' => $this->title,
             'description' => $this->description,
-            'status' => $this->status,
+            'status' => $this->whenLoaded('status', fn () => [
+                'id' => $this->status->id,
+                'name' => $this->status->name,
+                'color' => $this->status->color,
+            ]),
             'priority' => $this->priority,
             'due_date' => $this->due_date?->toDateString(),
             'estimated_hours' => $this->estimated_hours,

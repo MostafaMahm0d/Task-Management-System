@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Events\TaskStatusUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\StoreTaskRequest;
 use App\Http\Requests\Api\V1\UpdateTaskRequest;
+use App\Http\Requests\Api\V1\UpdateTaskStatusRequest;
 use App\Http\Resources\TaskResource;
+use App\Models\Status;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
@@ -20,9 +23,9 @@ class TaskController extends Controller
 
         $tasks = Task::query()
             ->visibleTo($request->user())
-            ->with(['assignee', 'reporter', 'labels'])
+            ->with(['status', 'assignee', 'reporter', 'labels'])
             ->when($request->filled('project_id'), fn ($query) => $query->where('project_id', $request->integer('project_id')))
-            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
+            ->when($request->filled('status_id'), fn ($query) => $query->where('status_id', $request->integer('status_id')))
             ->when($request->filled('priority'), fn ($query) => $query->where('priority', $request->string('priority')))
             ->when($request->filled('assignee_id'), fn ($query) => $query->where('assignee_id', $request->integer('assignee_id')))
             ->when($request->filled('search'), fn ($query) => $query->where('title', 'like', '%'.$request->string('search').'%'))
@@ -39,6 +42,7 @@ class TaskController extends Controller
     {
         $task = Task::create([
             ...$request->safe()->except('labels'),
+            'status_id' => $request->safe()->input('status_id') ?? Status::where('is_default', true)->value('id'),
             'reporter_id' => $request->user()->id,
         ]);
 
@@ -46,7 +50,7 @@ class TaskController extends Controller
             $task->labels()->sync($request->safe()->input('labels'));
         }
 
-        return TaskResource::make($task->refresh()->load(['assignee', 'reporter', 'labels']))
+        return TaskResource::make($task->refresh()->load(['status', 'assignee', 'reporter', 'labels']))
             ->response()
             ->setStatusCode(201);
     }
@@ -58,7 +62,7 @@ class TaskController extends Controller
     {
         $this->authorize('view', $task);
 
-        return TaskResource::make($task->load(['assignee', 'reporter', 'labels', 'dependsOn']));
+        return TaskResource::make($task->load(['status', 'assignee', 'reporter', 'labels', 'dependsOn']));
     }
 
     /**
@@ -72,7 +76,21 @@ class TaskController extends Controller
             $task->labels()->sync($request->safe()->input('labels'));
         }
 
-        return TaskResource::make($task->load(['assignee', 'reporter', 'labels']));
+        return TaskResource::make($task->load(['status', 'assignee', 'reporter', 'labels']));
+    }
+
+    /**
+     * Update the status of the specified resource, e.g. from a Kanban board drag-and-drop.
+     */
+    public function updateStatus(UpdateTaskStatusRequest $request, Task $task)
+    {
+        $previousStatusId = $task->status_id;
+
+        $task->update($request->validated());
+
+        event(new TaskStatusUpdated($task->refresh(), $previousStatusId));
+
+        return TaskResource::make($task->load(['status', 'assignee', 'reporter', 'labels']));
     }
 
     /**

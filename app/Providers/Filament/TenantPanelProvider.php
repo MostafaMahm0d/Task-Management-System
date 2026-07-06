@@ -22,6 +22,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use Wezlo\FilamentKanban\FilamentKanbanPlugin;
 
 class TenantPanelProvider extends PanelProvider
 {
@@ -30,6 +31,7 @@ class TenantPanelProvider extends PanelProvider
         return $panel
             ->id('app')
             ->path('app')
+            ->viteTheme('resources/css/filament/app/theme.css')
             ->login()
             ->passwordReset()
             ->emailVerification()
@@ -62,6 +64,7 @@ class TenantPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                FilamentKanbanPlugin::make(),
             ])
             ->authMiddleware([
                 Authenticate::class,

@@ -39,9 +39,7 @@ class StoreTaskRequest extends FormRequest
             ],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'status' => ['nullable', Rule::in([
-                Task::STATUS_TODO, Task::STATUS_IN_PROGRESS, Task::STATUS_IN_REVIEW, Task::STATUS_DONE, Task::STATUS_CANCELLED,
-            ])],
+            'status_id' => ['nullable', Rule::exists('statuses', 'id')],
             'priority' => ['nullable', Rule::in([
                 Task::PRIORITY_LOW, Task::PRIORITY_MEDIUM, Task::PRIORITY_HIGH, Task::PRIORITY_URGENT,
             ])],

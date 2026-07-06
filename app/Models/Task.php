@@ -10,21 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['project_id', 'title', 'description', 'status', 'priority', 'assignee_id', 'reporter_id', 'due_date', 'estimated_hours'])]
+#[Fillable(['project_id', 'title', 'description', 'status_id', 'priority', 'assignee_id', 'reporter_id', 'due_date', 'estimated_hours'])]
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */
     use HasFactory;
-
-    public const STATUS_TODO = 'todo';
-
-    public const STATUS_IN_PROGRESS = 'in_progress';
-
-    public const STATUS_IN_REVIEW = 'in_review';
-
-    public const STATUS_DONE = 'done';
-
-    public const STATUS_CANCELLED = 'cancelled';
 
     public const PRIORITY_LOW = 'low';
 
@@ -45,6 +35,11 @@ class Task extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(Status::class);
     }
 
     public function assignee(): BelongsTo
@@ -76,7 +71,7 @@ class Task extends Model
 
     public function isBlocked(): bool
     {
-        return $this->dependsOn()->where('status', '!=', self::STATUS_DONE)->exists();
+        return $this->dependsOn()->whereHas('status', fn (Builder $query) => $query->where('is_completed', false))->exists();
     }
 
     public function scopeVisibleTo(Builder $query, User $user): Builder

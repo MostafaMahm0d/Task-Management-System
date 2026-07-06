@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Resources\Projects\RelationManagers;
 
+use App\Models\Status;
 use App\Models\Task;
 use App\Models\User;
 use Filament\Actions\BulkActionGroup;
@@ -33,15 +34,10 @@ class TasksRelationManager extends RelationManager
                 Textarea::make('description')
                     ->columnSpanFull(),
 
-                Select::make('status')
-                    ->options([
-                        Task::STATUS_TODO => 'To Do',
-                        Task::STATUS_IN_PROGRESS => 'In Progress',
-                        Task::STATUS_IN_REVIEW => 'In Review',
-                        Task::STATUS_DONE => 'Done',
-                        Task::STATUS_CANCELLED => 'Cancelled',
-                    ])
-                    ->default(Task::STATUS_TODO)
+                Select::make('status_id')
+                    ->label('Status')
+                    ->relationship('status', 'name', modifyQueryUsing: fn ($query) => $query->orderBy('position'))
+                    ->default(fn () => Status::where('is_default', true)->value('id'))
                     ->required(),
 
                 Select::make('priority')
@@ -90,14 +86,10 @@ class TasksRelationManager extends RelationManager
                 TextColumn::make('title')
                     ->searchable(),
 
-                TextColumn::make('status')
+                TextColumn::make('status.name')
+                    ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        Task::STATUS_DONE => 'success',
-                        Task::STATUS_IN_PROGRESS, Task::STATUS_IN_REVIEW => 'info',
-                        Task::STATUS_CANCELLED => 'danger',
-                        default => 'gray',
-                    }),
+                    ->color(fn (Task $record): string => $record->status->color),
 
                 TextColumn::make('priority')
                     ->badge()
