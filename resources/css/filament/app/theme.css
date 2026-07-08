@@ -3,3 +3,4 @@
 @source '../../../../app/Filament/Tenant/**/*';
 @source '../../../../resources/views/filament/tenant/**/*';
 @source '../../../../vendor/wezlo/filament-kanban/resources/views/**/*';
+@source '../../../../vendor/relaticle/comments/resources/views/**/*.blade.php';

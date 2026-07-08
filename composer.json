@@ -12,6 +12,7 @@
         "laravel/framework": "^13.8",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
+        "relaticle/comments": "^1.0",
         "stancl/tenancy": "^3.10",
         "wezlo/filament-kanban": "^1.0"
     },

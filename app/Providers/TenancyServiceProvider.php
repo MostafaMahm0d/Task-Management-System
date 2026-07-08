@@ -82,7 +82,11 @@ class TenancyServiceProvider extends ServiceProvider
             ],
 
             Events\BootstrappingTenancy::class => [],
-            Events\TenancyBootstrapped::class => [],
+            Events\TenancyBootstrapped::class => [
+                function () {
+                    $this->retargetPublicDiskUrlAtCurrentDomain();
+                },
+            ],
             Events\RevertingToCentralContext::class => [],
             Events\RevertedToCentralContext::class => [],
 
@@ -106,6 +110,8 @@ class TenancyServiceProvider extends ServiceProvider
         $this->bootEvents();
         $this->mapRoutes();
         $this->mapLivewireUpdateRoute();
+        $this->mapLivewireUploadRoute();
+        $this->mapStorageServeRoute();
         $this->makeTenancyMiddlewareHighestPriority();
     }
 
@@ -126,6 +132,64 @@ class TenancyServiceProvider extends ServiceProvider
             return Route::post('/livewire/update', $handle)
                 ->middleware(['web', 'universal', Middleware\InitializeTenancyByDomain::class]);
         });
+    }
+
+    /**
+     * Livewire's file upload endpoint is also registered globally (see
+     * mapLivewireUpdateRoute above) and has no config hook to re-register the
+     * route, but it does read `livewire.temporary_file_upload.middleware`
+     * when resolving its controller middleware. Add tenancy initialization
+     * there so uploads on tenant domains use the tenant's session/DB
+     * connection instead of the central one, which otherwise causes a
+     * CSRF/session mismatch (419) on every upload.
+     */
+    protected function mapLivewireUploadRoute()
+    {
+        config([
+            'livewire.temporary_file_upload.middleware' => [
+                'web', 'universal', Middleware\InitializeTenancyByDomain::class, 'throttle:60,1',
+            ],
+        ]);
+    }
+
+    /**
+     * Laravel's built-in `public` disk serve route (`storage/{path}`, enabled
+     * via `serve` in config/filesystems.php) is also registered globally with
+     * no tenancy awareness. Since FilesystemTenancyBootstrapper suffixes
+     * storage_path() per tenant, files like comment attachments live under
+     * storage/tenant{id}/app/public/... — without tenancy initialized first,
+     * the route resolves the `public` disk against the central root and
+     * 404s/403s. The route is registered lazily in a `booted()` callback by
+     * FilesystemServiceProvider, and callback firing order between providers
+     * isn't reliable, so we attach the middleware on `RouteMatched` instead:
+     * it always fires after the full route table (including lazily added
+     * routes) exists, but before middleware is gathered for dispatch.
+     */
+    protected function mapStorageServeRoute()
+    {
+        Event::listen(\Illuminate\Routing\Events\RouteMatched::class, function ($event) {
+            if ($event->route->getName() === 'storage.public') {
+                $event->route->middleware(['universal', Middleware\InitializeTenancyByDomain::class]);
+            }
+        });
+    }
+
+    /**
+     * FilesystemTenancyBootstrapper suffixes the `public` disk's root per
+     * tenant but leaves its `url` untouched, so every generated public URL
+     * (e.g. comment attachments) still points at the central APP_URL
+     * regardless of which tenant domain is being browsed. Retarget it to the
+     * current request's own domain so links resolve on the correct tenant.
+     */
+    protected function retargetPublicDiskUrlAtCurrentDomain()
+    {
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
+        config([
+            'filesystems.disks.public.url' => rtrim($this->app['request']->getSchemeAndHttpHost(), '/').'/storage',
+        ]);
     }
 
     protected function bootEvents()

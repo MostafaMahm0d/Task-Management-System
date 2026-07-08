@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8ca8b432b06189d5a0cd72e00be4364",
+    "content-hash": "bbfb750d8aa6ee57545e8eb3f2510989",
     "packages": [
         {
             "name": "bezhansalleh/filament-plugin-essentials",
@@ -5165,6 +5165,69 @@
                 "source": "https://github.com/ramsey/uuid/tree/4.9.3"
             },
             "time": "2026-06-18T03:57:49+00:00"
+        },
+        {
+            "name": "relaticle/comments",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/relaticle/comments.git",
+                "reference": "17322620db3ead4a940707945759c8c85660969f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/relaticle/comments/zipball/17322620db3ead4a940707945759c8c85660969f",
+                "reference": "17322620db3ead4a940707945759c8c85660969f",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0|^5.0",
+                "filament/notifications": "^4.0|^5.0",
+                "filament/support": "^4.0|^5.0",
+                "illuminate/database": "^12.0|^13.0",
+                "illuminate/support": "^12.0|^13.0",
+                "livewire/livewire": "^3.5|^4.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.93"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^3.0|^4.0",
+                "pestphp/pest-plugin-laravel": "^3.0|^4.0",
+                "pestphp/pest-plugin-livewire": "^3.0|^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Relaticle\\Comments\\CommentsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Relaticle\\Comments\\": "src/",
+                    "Relaticle\\Comments\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A full-featured commenting system for Filament panels",
+            "support": {
+                "issues": "https://github.com/relaticle/comments/issues",
+                "source": "https://github.com/relaticle/comments/tree/v1.0.3"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Relaticle",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-05-07T14:04:44+00:00"
         },
         {
             "name": "ryangjchandler/blade-capture-directive",
@@ -12443,5 +12506,5 @@
         "php": "^8.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }

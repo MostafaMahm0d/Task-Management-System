@@ -5,6 +5,7 @@ namespace App\Filament\Tenant\Resources\Tasks\Pages;
 use App\Filament\Tenant\Resources\Tasks\TaskResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
+use Relaticle\Comments\Filament\Actions\CommentsAction;
 
 class ViewTask extends ViewRecord
 {
@@ -13,6 +14,7 @@ class ViewTask extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            CommentsAction::make(),
             EditAction::make(),
         ];
     }
