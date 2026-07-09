@@ -90,7 +90,9 @@ return [
 
     'notifications' => [
         'channels' => ['database'],
-        'enabled' => true,
+        // Disabled: mention notifications are handled by App\Listeners\SendCommentMentionedNotification
+        // so they go through the super-admin-configurable NotificationSetting channels instead.
+        'enabled' => false,
     ],
 
     'subscriptions' => [

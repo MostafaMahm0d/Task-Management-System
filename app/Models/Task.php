@@ -31,6 +31,7 @@ class Task extends Model implements Commentable
         return [
             'due_date' => 'date',
             'estimated_hours' => 'decimal:2',
+            'overdue_notified_at' => 'datetime',
         ];
     }
 

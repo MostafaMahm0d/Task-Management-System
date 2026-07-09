@@ -21,6 +21,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'ViewAny:Task', 'View:Task', 'Create:Task', 'Update:Task', 'Delete:Task', 'DeleteAny:Task',
                 'ViewAny:Label', 'View:Label', 'Create:Label', 'Update:Label', 'Delete:Label', 'DeleteAny:Label',
                 'ViewAny:Status', 'View:Status', 'Create:Status', 'Update:Status', 'Delete:Status', 'DeleteAny:Status',
+                'View:NotificationSettings',
             ],
             'project_manager' => [
                 'project.create', 'task.assign', 'task.move', 'report.view',

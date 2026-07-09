@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Tenant\Livewire\DatabaseNotifications;
 use App\Http\Middleware\PreventAccessIfTenantSuspended;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -12,6 +13,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -36,6 +38,12 @@ class TenantPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->emailVerification()
+            ->databaseNotifications(livewireComponent: DatabaseNotifications::class)
+            ->databaseNotificationsPolling('30s')
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => view('filament.tenant.components.notification-sound')->render(),
+            )
             ->colors([
                 'primary' => Color::Indigo,
             ])
