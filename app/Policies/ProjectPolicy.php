@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Models\Project;
-use App\Models\ProjectMember;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 
@@ -20,11 +19,7 @@ class ProjectPolicy
 
     public function view(AuthUser $authUser, Project $project): bool
     {
-        if (! $authUser->can('View:Project')) {
-            return false;
-        }
-
-        return $authUser->hasRole('tenant_admin') || $project->isMember($authUser);
+        return $authUser->can('View:Project') && ($authUser->hasRole('tenant_admin') || $project->isMember($authUser));
     }
 
     public function create(AuthUser $authUser): bool
@@ -34,26 +29,12 @@ class ProjectPolicy
 
     public function update(AuthUser $authUser, Project $project): bool
     {
-        if (! $authUser->can('Update:Project')) {
-            return false;
-        }
-
-        if ($authUser->hasRole('tenant_admin') || $project->owner_id === $authUser->id) {
-            return true;
-        }
-
-        $role = $project->members()->whereKey($authUser->id)->value('project_members.role');
-
-        return in_array($role, [ProjectMember::ROLE_OWNER, ProjectMember::ROLE_MANAGER], true);
+        return $authUser->can('Update:Project') && ($authUser->hasRole('tenant_admin') || $project->isMember($authUser));
     }
 
     public function delete(AuthUser $authUser, Project $project): bool
     {
-        if (! $authUser->can('Delete:Project')) {
-            return false;
-        }
-
-        return $authUser->hasRole('tenant_admin') || $project->owner_id === $authUser->id;
+        return $authUser->can('Delete:Project') && ($authUser->hasRole('tenant_admin') || $project->owner_id === $authUser->id);
     }
 
     public function deleteAny(AuthUser $authUser): bool
@@ -89,5 +70,10 @@ class ProjectPolicy
     public function reorder(AuthUser $authUser): bool
     {
         return $authUser->can('Reorder:Project');
+    }
+
+    public function viewActivity(AuthUser $authUser, Project $project): bool
+    {
+        return $authUser->can('ViewActivity:Project') && ($authUser->hasRole('tenant_admin') || $project->isMember($authUser));
     }
 }

@@ -26,6 +26,7 @@ class DependsOnRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('title')
+            ->inverseRelationship('blocks')
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),

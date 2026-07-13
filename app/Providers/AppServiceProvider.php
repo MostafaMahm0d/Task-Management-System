@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Filament\Tenant\Livewire\ActivityTimeline;
 use App\Models\Task;
 use App\Observers\TaskObserver;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,5 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Task::observe(TaskObserver::class);
+
+        Livewire::component('activity-timeline', ActivityTimeline::class);
     }
 }

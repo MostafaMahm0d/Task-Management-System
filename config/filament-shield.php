@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Filament\Central\Resources\Tenants\TenantResource;
+use App\Filament\Tenant\Resources\Projects\ProjectResource;
+use App\Filament\Tenant\Resources\Tasks\TaskResource;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
 use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
@@ -182,6 +184,12 @@ return [
                 'createSuperAdmin',
                 'manageUsers',
                 'suspend',
+            ],
+            TaskResource::class => [
+                'viewActivity',
+            ],
+            ProjectResource::class => [
+                'viewActivity',
             ],
         ],
         'exclude' => [

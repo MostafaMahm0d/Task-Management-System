@@ -15,6 +15,7 @@
         "laravel/tinker": "^3.0",
         "predis/predis": "^3.5",
         "relaticle/comments": "^1.0",
+        "spatie/laravel-activitylog": "^5.0",
         "stancl/tenancy": "^3.10",
         "wezlo/filament-kanban": "^1.0"
     },

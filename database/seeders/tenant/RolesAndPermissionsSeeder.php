@@ -15,13 +15,15 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $rolePermissions = [
             'tenant_admin' => [
-                'project.create', 'task.assign', 'task.move', 'report.view',
+                'project.create', 'task.assign', 'task.move', 'report.view', 'activity.viewAll',
                 'ViewAny:Project', 'View:Project', 'Create:Project', 'Update:Project', 'Delete:Project', 'DeleteAny:Project',
                 'ViewAny:User', 'View:User', 'Create:User', 'Update:User', 'Delete:User', 'DeleteAny:User',
                 'ViewAny:Task', 'View:Task', 'Create:Task', 'Update:Task', 'Delete:Task', 'DeleteAny:Task',
                 'ViewAny:Label', 'View:Label', 'Create:Label', 'Update:Label', 'Delete:Label', 'DeleteAny:Label',
                 'ViewAny:Status', 'View:Status', 'Create:Status', 'Update:Status', 'Delete:Status', 'DeleteAny:Status',
                 'View:NotificationSettings',
+                'ViewAny:Activity', 'View:Activity',
+                'ViewActivity:Task', 'ViewActivity:Project',
             ],
             'project_manager' => [
                 'project.create', 'task.assign', 'task.move', 'report.view',
@@ -29,6 +31,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'ViewAny:Task', 'View:Task', 'Create:Task', 'Update:Task',
                 'ViewAny:Label', 'View:Label', 'Create:Label', 'Update:Label',
                 'ViewAny:Status', 'View:Status',
+                'ViewAny:Activity', 'View:Activity',
+                'ViewActivity:Task', 'ViewActivity:Project',
             ],
             'employee' => [
                 'task.move', 'report.view',

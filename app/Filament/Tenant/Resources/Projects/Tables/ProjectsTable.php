@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Resources\Projects\Tables;
 
+use App\Filament\Tenant\Actions\ViewActivityAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,6 +15,7 @@ class ProjectsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
@@ -39,6 +41,7 @@ class ProjectsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                ViewActivityAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

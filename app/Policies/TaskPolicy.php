@@ -19,11 +19,7 @@ class TaskPolicy
 
     public function view(AuthUser $authUser, Task $task): bool
     {
-        if (! $authUser->can('View:Task')) {
-            return false;
-        }
-
-        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+        return $authUser->can('View:Task') && ($authUser->hasRole('tenant_admin') || $task->project->isMember($authUser));
     }
 
     public function create(AuthUser $authUser): bool
@@ -33,22 +29,12 @@ class TaskPolicy
 
     public function update(AuthUser $authUser, Task $task): bool
     {
-        if (! $authUser->can('Update:Task')) {
-            return false;
-        }
-
-        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+        return $authUser->can('Update:Task') && ($authUser->hasRole('tenant_admin') || $task->project->isMember($authUser));
     }
 
     public function delete(AuthUser $authUser, Task $task): bool
     {
-        if (! $authUser->can('Delete:Task')) {
-            return false;
-        }
-
-        return $authUser->hasRole('tenant_admin')
-            || $task->reporter_id === $authUser->id
-            || $task->project->owner_id === $authUser->id;
+        return $authUser->can('Delete:Task') && ($authUser->hasRole('tenant_admin') || $task->project->isMember($authUser));
     }
 
     public function deleteAny(AuthUser $authUser): bool
@@ -84,5 +70,10 @@ class TaskPolicy
     public function reorder(AuthUser $authUser): bool
     {
         return $authUser->can('Reorder:Task');
+    }
+
+    public function viewActivity(AuthUser $authUser, Task $task): bool
+    {
+        return $authUser->can('ViewActivity:Task') && ($authUser->hasRole('tenant_admin') || $task->project->isMember($authUser));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Resources\Projects\Pages;
 
+use App\Filament\Tenant\Actions\ViewActivityAction;
 use App\Filament\Tenant\Resources\Projects\ProjectResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
@@ -13,6 +14,7 @@ class ViewProject extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            ViewActivityAction::make(),
             EditAction::make(),
         ];
     }
