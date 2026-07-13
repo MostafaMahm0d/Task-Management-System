@@ -76,7 +76,9 @@ class Task extends Model implements Commentable
 
     public function isBlocked(): bool
     {
-        return $this->dependsOn()->whereHas('status', fn (Builder $query) => $query->where('is_completed', false))->exists();
+        return $this->dependsOn()
+            ->whereHas('status', fn (Builder $query) => $query->where('is_completed', false)->where('is_cancelled', false))
+            ->exists();
     }
 
     public function scopeVisibleTo(Builder $query, User $user): Builder

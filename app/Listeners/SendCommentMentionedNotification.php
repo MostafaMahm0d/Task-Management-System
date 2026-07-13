@@ -9,6 +9,8 @@ use Relaticle\Comments\Events\UserMentioned;
 
 class SendCommentMentionedNotification implements ShouldQueue
 {
+    public bool $deleteWhenMissingModels = true;
+
     public function handle(UserMentioned $event): void
     {
         if (! $event->mentionedUser instanceof User) {

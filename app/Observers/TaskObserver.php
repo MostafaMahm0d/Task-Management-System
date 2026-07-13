@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Events\TaskAssigned;
+use App\Events\TaskCancelled;
 use App\Events\TaskCompleted;
 use App\Models\Task;
 
@@ -23,6 +24,10 @@ class TaskObserver
 
         if ($task->isDirty('status_id') && $task->status?->is_completed) {
             event(new TaskCompleted($task, auth()->user()));
+        }
+
+        if ($task->isDirty('status_id') && $task->status?->is_cancelled) {
+            event(new TaskCancelled($task, auth()->user()));
         }
 
         if ($task->isDirty('due_date') && $task->overdue_notified_at !== null) {

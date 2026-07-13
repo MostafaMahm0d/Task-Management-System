@@ -8,6 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SendTaskCompletedNotification implements ShouldQueue
 {
+    public bool $deleteWhenMissingModels = true;
+
     public function handle(TaskCompleted $event): void
     {
         collect([$event->task->reporter, $event->task->project->owner])

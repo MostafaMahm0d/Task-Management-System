@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'color', 'position', 'is_default', 'is_completed'])]
+#[Fillable(['name', 'color', 'position', 'is_default', 'is_completed', 'is_cancelled'])]
 class Status extends Model
 {
     /** @use HasFactory<StatusFactory> */
@@ -19,6 +19,7 @@ class Status extends Model
         return [
             'is_default' => 'boolean',
             'is_completed' => 'boolean',
+            'is_cancelled' => 'boolean',
         ];
     }
 

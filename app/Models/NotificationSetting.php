@@ -16,6 +16,8 @@ class NotificationSetting extends Model
 
     public const EVENT_COMMENT_MENTIONED = 'comment_mentioned';
 
+    public const EVENT_TASK_UNBLOCKED = 'task_unblocked';
+
     public const CHANNEL_DATABASE = 'database';
 
     public const CHANNEL_MAIL = 'mail';
@@ -37,6 +39,7 @@ class NotificationSetting extends Model
             self::EVENT_TASK_COMPLETED => 'Task Completed',
             self::EVENT_TASK_OVERDUE => 'Task Overdue',
             self::EVENT_COMMENT_MENTIONED => 'Comment Mentioned',
+            self::EVENT_TASK_UNBLOCKED => 'Task Unblocked',
         ];
     }
 
