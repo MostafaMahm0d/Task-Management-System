@@ -17,4 +17,16 @@ class ProjectMember extends Pivot
     public $incrementing = true;
 
     protected $table = 'project_members';
+
+    /**
+     * @return array<string, string>
+     */
+    public static function roleOptions(): array
+    {
+        return [
+            self::ROLE_OWNER => 'Owner',
+            self::ROLE_MANAGER => 'Manager',
+            self::ROLE_MEMBER => 'Member',
+        ];
+    }
 }

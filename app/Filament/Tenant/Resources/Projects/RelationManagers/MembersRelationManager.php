@@ -19,12 +19,6 @@ class MembersRelationManager extends RelationManager
 {
     protected static string $relationship = 'members';
 
-    protected static array $roleOptions = [
-        ProjectMember::ROLE_OWNER => 'Owner',
-        ProjectMember::ROLE_MANAGER => 'Manager',
-        ProjectMember::ROLE_MEMBER => 'Member',
-    ];
-
     public function form(Schema $schema): Schema
     {
         return $schema->components([]);
@@ -51,7 +45,7 @@ class MembersRelationManager extends RelationManager
                     ->schema(fn (AttachAction $action): array => [
                         $action->getRecordSelect(),
                         Select::make('role')
-                            ->options(static::$roleOptions)
+                            ->options(ProjectMember::roleOptions())
                             ->default(ProjectMember::ROLE_MEMBER)
                             ->required(),
                     ]),
@@ -61,7 +55,7 @@ class MembersRelationManager extends RelationManager
                     ->label('Edit role')
                     ->schema([
                         Select::make('role')
-                            ->options(static::$roleOptions)
+                            ->options(ProjectMember::roleOptions())
                             ->required(),
                     ])
                     ->fillForm(fn (User $record): array => ['role' => $record->pivot->role])

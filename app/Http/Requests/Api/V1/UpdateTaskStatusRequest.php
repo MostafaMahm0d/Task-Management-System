@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,7 +25,17 @@ class UpdateTaskStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status_id' => ['required', Rule::exists('statuses', 'id')],
+            'status_id' => [
+                'required',
+                Rule::exists('statuses', 'id'),
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    $task = $this->route('task');
+
+                    if (! $task->status?->allowsTransitionTo((int) $value)) {
+                        $fail('This status transition is not allowed.');
+                    }
+                },
+            ],
         ];
     }
 }

@@ -30,6 +30,14 @@ class TaskObserver
             event(new TaskCancelled($task, auth()->user()));
         }
 
+        if ($task->isDirty('status_id')) {
+            $assignee = $task->status?->assignmentRule?->resolveAssigneeFor($task);
+
+            if ($assignee && $assignee->id !== $task->assignee_id) {
+                $task->update(['assignee_id' => $assignee->id]);
+            }
+        }
+
         if ($task->isDirty('due_date') && $task->overdue_notified_at !== null) {
             $task->forceFill(['overdue_notified_at' => null])->saveQuietly();
         }
