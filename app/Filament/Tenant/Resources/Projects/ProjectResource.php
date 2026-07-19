@@ -31,7 +31,7 @@ class ProjectResource extends Resource
 
         $user = auth()->user();
 
-        if ($user?->hasRole('tenant_admin')) {
+        if ($user?->can('project.manageAll')) {
             return $query;
         }
 

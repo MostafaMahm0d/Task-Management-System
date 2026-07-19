@@ -8,8 +8,10 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Relaticle\Comments\Filament\Actions\CommentsTableAction;
 
 class TasksTable
@@ -57,9 +59,14 @@ class TasksTable
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('project')
+                    ->relationship('project', 'name', modifyQueryUsing: fn (Builder $query) => $query->visibleTo(auth()->user()))
+                    ->searchable(),
+
                 SelectFilter::make('status_id')
                     ->label('Status')
-                    ->relationship('status', 'name'),
+                    ->relationship('status', 'name')
+                    ->multiple(),
 
                 SelectFilter::make('priority')
                     ->options([
@@ -67,11 +74,19 @@ class TasksTable
                         Task::PRIORITY_MEDIUM => 'Medium',
                         Task::PRIORITY_HIGH => 'High',
                         Task::PRIORITY_URGENT => 'Urgent',
-                    ]),
+                    ])
+                    ->multiple(),
 
                 SelectFilter::make('assignee')
                     ->relationship('assignee', 'name')
                     ->searchable(),
+
+                Filter::make('overdue')
+                    ->label('Overdue')
+                    ->query(fn (Builder $query) => $query
+                        ->whereDate('due_date', '<', now())
+                        ->whereHas('status', fn ($query) => $query->where('is_completed', false)->where('is_cancelled', false)))
+                    ->toggle(),
             ])
             ->recordActions([
                 ViewAction::make(),

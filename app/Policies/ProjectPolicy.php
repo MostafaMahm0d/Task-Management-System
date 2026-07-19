@@ -19,7 +19,7 @@ class ProjectPolicy
 
     public function view(AuthUser $authUser, Project $project): bool
     {
-        return $authUser->can('View:Project') && ($authUser->hasRole('tenant_admin') || $project->isMember($authUser));
+        return $authUser->can('View:Project') && ($authUser->can('project.manageAll') || $project->isMember($authUser));
     }
 
     public function create(AuthUser $authUser): bool
@@ -29,12 +29,12 @@ class ProjectPolicy
 
     public function update(AuthUser $authUser, Project $project): bool
     {
-        return $authUser->can('Update:Project') && ($authUser->hasRole('tenant_admin') || $project->isMember($authUser));
+        return $authUser->can('Update:Project') && ($authUser->can('project.manageAll') || $project->isMember($authUser));
     }
 
     public function delete(AuthUser $authUser, Project $project): bool
     {
-        return $authUser->can('Delete:Project') && ($authUser->hasRole('tenant_admin') || $project->owner_id === $authUser->id);
+        return $authUser->can('Delete:Project') && ($authUser->can('project.manageAll') || $project->owner_id === $authUser->id);
     }
 
     public function deleteAny(AuthUser $authUser): bool
@@ -74,6 +74,6 @@ class ProjectPolicy
 
     public function viewActivity(AuthUser $authUser, Project $project): bool
     {
-        return $authUser->can('ViewActivity:Project') && ($authUser->hasRole('tenant_admin') || $project->isMember($authUser));
+        return $authUser->can('ViewActivity:Project') && ($authUser->can('project.manageAll') || $project->isMember($authUser));
     }
 }

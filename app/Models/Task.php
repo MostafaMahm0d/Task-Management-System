@@ -83,7 +83,7 @@ class Task extends Model implements Commentable
 
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->hasRole('tenant_admin')) {
+        if ($user->can('task.manageAll')) {
             return $query;
         }
 

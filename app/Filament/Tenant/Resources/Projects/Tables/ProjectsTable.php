@@ -8,6 +8,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ProjectsTable
@@ -36,7 +37,9 @@ class ProjectsTable
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('owner')
+                    ->relationship('owner', 'name')
+                    ->searchable(),
             ])
             ->recordActions([
                 ViewAction::make(),

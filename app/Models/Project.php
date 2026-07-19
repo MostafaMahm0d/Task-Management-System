@@ -42,6 +42,19 @@ class Project extends Model
         return $this->owner_id === $user->id || $this->members()->whereKey($user->id)->exists();
     }
 
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->can('project.manageAll')) {
+            return $query;
+        }
+
+        return $query->where(
+            fn (Builder $query) => $query
+                ->where('owner_id', $user->id)
+                ->orWhereHas('members', fn (Builder $query) => $query->whereKey($user->id))
+        );
+    }
+
     /**
      * @return array<int>
      */

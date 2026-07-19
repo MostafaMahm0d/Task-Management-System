@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Jobs\Tenant\CreateSuperAdminForTenant;
 use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -167,7 +168,7 @@ class TenancyServiceProvider extends ServiceProvider
      */
     protected function mapStorageServeRoute()
     {
-        Event::listen(\Illuminate\Routing\Events\RouteMatched::class, function ($event) {
+        Event::listen(RouteMatched::class, function ($event) {
             if ($event->route->getName() === 'storage.public') {
                 $event->route->middleware(['universal', Middleware\InitializeTenancyByDomain::class]);
             }

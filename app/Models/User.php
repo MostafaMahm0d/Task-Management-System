@@ -60,6 +60,16 @@ class User extends Authenticatable implements Commentator, MustVerifyEmail
         return $this->hasMany(Task::class, 'reporter_id');
     }
 
+    public function ratingsReceived(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'employee_id');
+    }
+
+    public function ratingsGiven(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'rater_id');
+    }
+
     public static function isViaCentralImpersonation(): bool
     {
         $expiresAt = session('via_central_impersonation_expires_at');

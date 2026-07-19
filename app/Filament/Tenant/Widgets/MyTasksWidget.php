@@ -4,6 +4,7 @@ namespace App\Filament\Tenant\Widgets;
 
 use App\Filament\Tenant\Resources\Tasks\TaskResource;
 use App\Models\Task;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -12,21 +13,31 @@ use Illuminate\Database\Eloquent\Builder;
 
 class MyTasksWidget extends TableWidget
 {
-    protected static ?string $heading = 'My Tasks';
+    use HasWidgetShield;
+
+    protected static ?int $sort = 6;
 
     public function table(Table $table): Table
     {
+        $isAdmin = auth()->user()->can('task.manageAll');
+
         return $table
+            ->heading($isAdmin ? 'All Open Tasks' : 'My Tasks')
             ->query(fn (): Builder => Task::query()
-                ->where('assignee_id', auth()->id())
-                ->whereHas('status', fn ($query) => $query->where('is_completed', false)))
+                ->when(! $isAdmin, fn (Builder $query) => $query->where('assignee_id', auth()->id()))
+                ->whereHas('status', fn ($query) => $query->where('is_completed', false)->where('is_cancelled', false)))
+            ->recordUrl(fn (Task $record): string => TaskResource::getUrl('view', ['record' => $record]))
             ->columns([
                 TextColumn::make('title')
-                    ->searchable()
-                    ->url(fn (Task $record): string => TaskResource::getUrl('view', ['record' => $record])),
+                    ->searchable(),
 
                 TextColumn::make('project.name')
                     ->label('Project'),
+
+                TextColumn::make('assignee.name')
+                    ->label('Assignee')
+                    ->placeholder('Unassigned')
+                    ->visible($isAdmin),
 
                 TextColumn::make('status.name')
                     ->label('Status')
@@ -52,7 +63,7 @@ class MyTasksWidget extends TableWidget
             ->headerActions([
                 Action::make('viewAll')
                     ->label('View all')
-                    ->url(fn (): string => TaskResource::getUrl('my-tasks')),
+                    ->url(fn (): string => $isAdmin ? TaskResource::getUrl('index') : TaskResource::getUrl('my-tasks')),
             ]);
     }
 }
