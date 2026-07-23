@@ -55,7 +55,7 @@ class StatusForm
                             ->options([
                                 StatusAssignmentRule::STRATEGY_CREATOR => "Assign back to the task's creator",
                                 StatusAssignmentRule::STRATEGY_OWNER => 'Assign to the project owner',
-                                StatusAssignmentRule::STRATEGY_ROLE => "Assign to a project role",
+                                StatusAssignmentRule::STRATEGY_ROLE => 'Assign to a project role',
                             ])
                             ->live()
                             ->helperText('Leave blank to leave the assignee unchanged.'),

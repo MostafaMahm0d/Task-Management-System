@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\Tasks\Pages;
+namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
@@ -16,7 +16,7 @@ class ListTasks extends ListRecords
         return [
             Action::make('board')
                 ->label('Board view')
-                ->url(fn (): string => TaskResource::getUrl('board')),
+                ->url(fn (): string => TaskResource::getUrl('board', ['project' => $this->getParentRecord()])),
             CreateAction::make(),
         ];
     }

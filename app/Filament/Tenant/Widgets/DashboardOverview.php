@@ -2,9 +2,9 @@
 
 namespace App\Filament\Tenant\Widgets;
 
+use App\Enums\TaskPriority;
 use App\Filament\Tenant\Resources\Projects\ProjectResource;
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
-use App\Models\Task;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -39,7 +39,7 @@ class DashboardOverview extends StatsOverviewWidget
                 ->color($overdueCount > 0 ? 'danger' : 'success'),
 
             Stat::make('Urgent / High Priority', (clone $myTasks)
-                ->whereIn('priority', [Task::PRIORITY_URGENT, Task::PRIORITY_HIGH])
+                ->whereIn('priority', [TaskPriority::Urgent, TaskPriority::High])
                 ->whereHas('status', fn ($query) => $query->where('is_completed', false))
                 ->count())
                 ->icon(Heroicon::OutlinedFlag)

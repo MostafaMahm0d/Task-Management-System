@@ -28,6 +28,19 @@ class TaskController extends Controller
             ->when($request->filled('status_id'), fn ($query) => $query->where('status_id', $request->integer('status_id')))
             ->when($request->filled('priority'), fn ($query) => $query->where('priority', $request->string('priority')))
             ->when($request->filled('assignee_id'), fn ($query) => $query->where('assignee_id', $request->integer('assignee_id')))
+            ->when($request->boolean('unassigned'), fn ($query) => $query->whereNull('assignee_id'))
+            ->when($request->filled('reporter_id'), fn ($query) => $query->where('reporter_id', $request->integer('reporter_id')))
+            ->when($request->filled('label_id'), fn ($query) => $query->whereHas('labels', fn ($query) => $query->whereKey($request->integer('label_id'))))
+            ->when($request->filled('due_after'), fn ($query) => $query->whereDate('due_date', '>=', $request->date('due_after')))
+            ->when($request->filled('due_before'), fn ($query) => $query->whereDate('due_date', '<=', $request->date('due_before')))
+            ->when($request->boolean('overdue'), fn ($query) => $query
+                ->where('due_date', '<', today())
+                ->whereHas('status', fn ($query) => $query->where('is_completed', false)->where('is_cancelled', false)))
+            ->when($request->boolean('blocked'), fn ($query) => $query
+                ->whereHas('dependsOn', fn ($query) => $query
+                    ->whereHas('status', fn ($query) => $query->where('is_completed', false)->where('is_cancelled', false))))
+            ->when($request->boolean('top_level_only'), fn ($query) => $query->whereNull('parent_task_id'))
+            ->when($request->filled('parent_task_id'), fn ($query) => $query->where('parent_task_id', $request->integer('parent_task_id')))
             ->when($request->filled('search'), fn ($query) => $query->where('title', 'like', '%'.$request->string('search').'%'))
             ->latest()
             ->paginate($request->integer('per_page', 15));
@@ -62,7 +75,7 @@ class TaskController extends Controller
     {
         $this->authorize('view', $task);
 
-        return TaskResource::make($task->load(['status', 'assignee', 'reporter', 'labels', 'dependsOn']));
+        return TaskResource::make($task->load(['status', 'assignee', 'reporter', 'labels', 'dependsOn', 'parent', 'subtasks.status']));
     }
 
     /**

@@ -17,6 +17,7 @@ class TaskResource extends JsonResource
         return [
             'id' => $this->id,
             'project_id' => $this->project_id,
+            'parent_task_id' => $this->parent_task_id,
             'title' => $this->title,
             'description' => $this->description,
             'status' => $this->whenLoaded('status', fn () => [
@@ -24,7 +25,7 @@ class TaskResource extends JsonResource
                 'name' => $this->status->name,
                 'color' => $this->status->color,
             ]),
-            'priority' => $this->priority,
+            'priority' => $this->priority?->value,
             'due_date' => $this->due_date?->toDateString(),
             'estimated_hours' => $this->estimated_hours,
             'is_blocked' => $this->isBlocked(),
@@ -42,6 +43,15 @@ class TaskResource extends JsonResource
                 'color' => $label->color,
             ])),
             'depends_on' => $this->whenLoaded('dependsOn', fn () => $this->dependsOn->pluck('id')),
+            'parent' => $this->whenLoaded('parent', fn () => $this->parent ? [
+                'id' => $this->parent->id,
+                'title' => $this->parent->title,
+            ] : null),
+            'subtasks' => $this->whenLoaded('subtasks', fn () => $this->subtasks->map(fn ($subtask) => [
+                'id' => $subtask->id,
+                'title' => $subtask->title,
+                'status' => $subtask->status?->name,
+            ])),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -2,9 +2,8 @@
 
 namespace App\Filament\Tenant\Widgets;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Task;
-use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -23,7 +22,7 @@ class MyTasksWidget extends TableWidget
             ->columns([
                 TextColumn::make('title')
                     ->searchable()
-                    ->url(fn (Task $record): string => TaskResource::getUrl('view', ['record' => $record])),
+                    ->url(fn (Task $record): string => TaskResource::getUrl('view', ['project' => $record->project, 'record' => $record])),
 
                 TextColumn::make('project.name')
                     ->label('Project'),
@@ -34,13 +33,7 @@ class MyTasksWidget extends TableWidget
                     ->color(fn (Task $record): string => $record->status->color),
 
                 TextColumn::make('priority')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        Task::PRIORITY_URGENT => 'danger',
-                        Task::PRIORITY_HIGH => 'warning',
-                        Task::PRIORITY_LOW => 'gray',
-                        default => 'info',
-                    }),
+                    ->badge(),
 
                 TextColumn::make('due_date')
                     ->date()
@@ -48,11 +41,6 @@ class MyTasksWidget extends TableWidget
                     ->color(fn (Task $record): ?string => $record->due_date?->isPast() ? 'danger' : null),
             ])
             ->defaultSort('due_date')
-            ->paginated([5, 10])
-            ->headerActions([
-                Action::make('viewAll')
-                    ->label('View all')
-                    ->url(fn (): string => TaskResource::getUrl('my-tasks')),
-            ]);
+            ->paginated([5, 10]);
     }
 }

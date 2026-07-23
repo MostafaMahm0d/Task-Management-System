@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\Tasks\Pages;
+namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages;
 
 use App\Events\TaskStatusUpdated;
-use App\Filament\Tenant\Resources\Tasks\Schemas\TaskInfolist;
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Schemas\TaskInfolist;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Status;
 use App\Models\Task;
 use Filament\Actions\Action;
@@ -12,6 +12,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
+use Illuminate\Database\Eloquent\Builder;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
 
@@ -25,17 +26,13 @@ class Board extends ListRecords
     {
         return $kanban
             ->relationshipColumn('status', 'name', Status::class, orderAttribute: 'position', colorAttribute: 'color')
+            ->modifyQueryUsing(fn (Builder $query): Builder => TaskResource::scopeEloquentQueryToParent($query, $this->getParentRecord()))
             ->cardTitle(fn (Task $record): string => $record->title)
             ->cardDescription(fn (Task $record): ?string => $record->assignee?->name)
             ->cardBadges(fn (Task $record): array => [
                 [
-                    'label' => ucfirst($record->priority),
-                    'color' => match ($record->priority) {
-                        Task::PRIORITY_URGENT => 'danger',
-                        Task::PRIORITY_HIGH => 'warning',
-                        Task::PRIORITY_LOW => 'gray',
-                        default => 'info',
-                    },
+                    'label' => $record->priority->getLabel(),
+                    'color' => $record->priority->getColor(),
                 ],
             ])
             ->cardAction(
@@ -64,7 +61,7 @@ class Board extends ListRecords
             CreateAction::make(),
             Action::make('list')
                 ->label('List view')
-                ->url(fn (): string => TaskResource::getUrl('index')),
+                ->url(fn (): string => TaskResource::getUrl('index', ['project' => $this->getParentRecord()])),
         ];
     }
 }

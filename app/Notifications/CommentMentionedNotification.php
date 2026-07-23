@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\NotificationSetting;
 use App\Models\Task;
 use Filament\Actions\Action as NotificationAction;
@@ -81,7 +81,7 @@ class CommentMentionedNotification extends Notification implements ShouldQueue
             return null;
         }
 
-        $path = TaskResource::getUrl('view', ['record' => $commentable], isAbsolute: false, panel: 'app');
+        $path = TaskResource::getUrl('view', ['project' => $commentable->project, 'record' => $commentable], isAbsolute: false, panel: 'app');
 
         return tenant()->url($path);
     }

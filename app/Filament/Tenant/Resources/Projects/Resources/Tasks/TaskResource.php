@@ -1,21 +1,20 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\Tasks;
+namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks;
 
-use App\Filament\Tenant\Resources\Tasks\Pages\Board;
-use App\Filament\Tenant\Resources\Tasks\Pages\CreateTask;
-use App\Filament\Tenant\Resources\Tasks\Pages\EditTask;
-use App\Filament\Tenant\Resources\Tasks\Pages\ListTasks;
-use App\Filament\Tenant\Resources\Tasks\Pages\MyTasks;
-use App\Filament\Tenant\Resources\Tasks\Pages\MyTasksBoard;
-use App\Filament\Tenant\Resources\Tasks\Pages\ViewTask;
-use App\Filament\Tenant\Resources\Tasks\RelationManagers\DependsOnRelationManager;
-use App\Filament\Tenant\Resources\Tasks\Schemas\TaskForm;
-use App\Filament\Tenant\Resources\Tasks\Schemas\TaskInfolist;
-use App\Filament\Tenant\Resources\Tasks\Tables\TasksTable;
+use App\Filament\Tenant\Resources\Projects\ProjectResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages\Board;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages\CreateTask;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages\EditTask;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages\ListTasks;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages\ViewTask;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\RelationManagers\DependsOnRelationManager;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\RelationManagers\SubtasksRelationManager;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Schemas\TaskForm;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Schemas\TaskInfolist;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Tables\TasksTable;
 use App\Models\Task;
 use BackedEnum;
-use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -25,6 +24,8 @@ use Illuminate\Database\Eloquent\Builder;
 class TaskResource extends Resource
 {
     protected static ?string $model = Task::class;
+
+    protected static ?string $parentResource = ProjectResource::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
@@ -58,6 +59,7 @@ class TaskResource extends Resource
     {
         return [
             DependsOnRelationManager::class,
+            SubtasksRelationManager::class,
         ];
     }
 
@@ -66,24 +68,9 @@ class TaskResource extends Resource
         return [
             'index' => ListTasks::route('/'),
             'board' => Board::route('/board'),
-            'my-tasks' => MyTasks::route('/my-tasks'),
-            'my-tasks-board' => MyTasksBoard::route('/my-tasks/board'),
             'create' => CreateTask::route('/create'),
             'view' => ViewTask::route('/{record}'),
             'edit' => EditTask::route('/{record}/edit'),
-        ];
-    }
-
-    public static function getNavigationItems(): array
-    {
-        return [
-            ...parent::getNavigationItems(),
-
-            NavigationItem::make('My Tasks')
-                ->icon(Heroicon::OutlinedUserCircle)
-                ->sort(static::getNavigationSort())
-                ->isActiveWhen(fn (): bool => request()->routeIs(static::getRouteBaseName().'.my-tasks*'))
-                ->url(fn (): string => static::getUrl('my-tasks')),
         ];
     }
 }
