@@ -95,6 +95,87 @@ class Task extends Model implements Commentable
         );
     }
 
+    public function scopeOverdue(Builder $query): Builder
+    {
+        return $query
+            ->whereDate('due_date', '<', now())
+            ->whereHas('status', fn (Builder $query) => $query->where('is_completed', false)->where('is_cancelled', false));
+    }
+
+    /**
+     * @return array{total: int, completed: int, rate: float, avg_days_to_close: ?float}
+     */
+    public static function completionSummary(Builder $query): array
+    {
+        $total = (clone $query)->count();
+
+        // No dedicated "completed_at" column exists — updated_at is used as an approximation
+        // of when a task last changed (including its final move to a completed status).
+        $completedQuery = (clone $query)->whereHas('status', fn (Builder $query) => $query->where('is_completed', true));
+        $completed = $completedQuery->count();
+
+        $avgDaysToClose = $total === 0 ? null : (clone $completedQuery)
+            ->selectRaw('AVG(DATEDIFF(updated_at, created_at)) as average')
+            ->value('average');
+
+        return [
+            'total' => $total,
+            'completed' => $completed,
+            'rate' => $total === 0 ? 0.0 : round($completed / $total * 100, 2),
+            'avg_days_to_close' => $avgDaysToClose === null ? null : round((float) $avgDaysToClose, 1),
+        ];
+    }
+
+    /**
+     * Monthly completion rate trend for the last $months months, cohorted by due_date so
+     * every task is counted in a single, stable bucket regardless of when it was closed.
+     *
+     * @return array<string, float> month ('Y-m') => completion rate percentage
+     */
+    public static function completionTrend(Builder $query, int $months = 6): array
+    {
+        $since = now()->subMonths($months - 1)->startOfMonth();
+
+        $rows = (clone $query)
+            ->whereNotNull('due_date')
+            ->where('due_date', '>=', $since)
+            ->selectRaw("DATE_FORMAT(due_date, '%Y-%m') as month, COUNT(*) as total")
+            ->selectRaw('SUM(CASE WHEN statuses.is_completed THEN 1 ELSE 0 END) as completed')
+            ->join('statuses', 'statuses.id', '=', 'tasks.status_id')
+            ->groupBy('month')
+            ->get();
+
+        return $rows->mapWithKeys(fn ($row): array => [
+            $row->month => $row->total === 0 ? 0.0 : round($row->completed / $row->total * 100, 2),
+        ])->all();
+    }
+
+    /**
+     * @return array{total: int, avg_days_overdue: ?float, by_priority: array<string, int>}
+     */
+    public static function overdueBreakdown(Builder $query): array
+    {
+        $overdueQuery = (clone $query)->overdue();
+
+        $total = (clone $overdueQuery)->count();
+
+        $avgDaysOverdue = $total === 0 ? null : (clone $overdueQuery)
+            ->selectRaw('AVG(DATEDIFF(?, due_date)) as average', [now()->toDateString()])
+            ->value('average');
+
+        $byPriority = (clone $overdueQuery)
+            ->selectRaw('priority, COUNT(*) as aggregate')
+            ->groupBy('priority')
+            ->pluck('aggregate', 'priority')
+            ->all();
+
+        return [
+            'total' => $total,
+            'avg_days_overdue' => $avgDaysOverdue === null ? null : round((float) $avgDaysOverdue, 1),
+            'by_priority' => $byPriority,
+        ];
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

@@ -63,6 +63,45 @@ class Project extends Model
         return [$this->owner_id, ...$this->members()->pluck('users.id')->all()];
     }
 
+    /**
+     * Annotates each project with its task/completed/overdue counts, shared by the Task
+     * Completion and Project Performance reports so the same aggregate query isn't duplicated.
+     */
+    public function scopeWithTaskAggregates(Builder $query): Builder
+    {
+        return $query
+            ->withCount('tasks')
+            ->withCount(['tasks as completed_tasks_count' => fn (Builder $query) => $query
+                ->whereHas('status', fn (Builder $query) => $query->where('is_completed', true))])
+            ->withCount(['tasks as overdue_tasks_count' => fn (Builder $query) => $query->overdue()]);
+    }
+
+    /**
+     * @return array{active_projects: int, avg_completion_rate: float, avg_on_time_rate: float}
+     */
+    public static function performanceSummary(Builder $query): array
+    {
+        $projects = (clone $query)->withTaskAggregates()->having('tasks_count', '>', 0)->get();
+
+        if ($projects->isEmpty()) {
+            return ['active_projects' => 0, 'avg_completion_rate' => 0.0, 'avg_on_time_rate' => 0.0];
+        }
+
+        $completionRates = $projects->map(fn (self $project): float => $project->tasks_count === 0
+            ? 0.0
+            : $project->completed_tasks_count / $project->tasks_count * 100);
+
+        $onTimeRates = $projects->map(fn (self $project): float => $project->tasks_count === 0
+            ? 0.0
+            : ($project->tasks_count - $project->overdue_tasks_count) / $project->tasks_count * 100);
+
+        return [
+            'active_projects' => $projects->count(),
+            'avg_completion_rate' => round((float) $completionRates->avg(), 2),
+            'avg_on_time_rate' => round((float) $onTimeRates->avg(), 2),
+        ];
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

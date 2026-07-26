@@ -24,15 +24,15 @@ class RolesAndPermissionsSeeder extends Seeder
         return [
             'super_admin' => [
                 'project.create', 'task.assign', 'task.move', 'report.view', 'activity.viewAll',
-                'project.manageAll', 'task.manageAll', 'rating.viewAll', 'rating.manageAll',
+                'project.manageAll', 'task.manageAll', 'rating.viewAll', 'rating.manageAll', 'report.export',
             ],
             'tenant_admin' => [
                 'project.create', 'task.assign', 'task.move', 'report.view', 'activity.viewAll',
-                'project.manageAll', 'task.manageAll', 'rating.viewAll', 'rating.manageAll',
+                'project.manageAll', 'task.manageAll', 'rating.viewAll', 'rating.manageAll', 'report.export',
             ],
             'project_manager' => [
                 'project.create', 'task.assign', 'task.move', 'report.view',
-                'rating.viewAll',
+                'rating.viewAll', 'report.export',
             ],
             'employee' => [
                 'task.move', 'report.view',
@@ -61,6 +61,24 @@ class RolesAndPermissionsSeeder extends Seeder
             'View:RecentActivity',
             'View:MyProjects',
             'View:MyTasksWidget',
+            'View:TaskCompletionOverview',
+            'View:TaskCompletionTrendChart',
+            'View:TeamWorkloadOverview',
+            'View:TeamWorkloadChart',
+            'View:OverdueTasksOverview',
+            'View:OverdueByProjectChart',
+            'View:ProjectPerformanceOverview',
+            'View:ProjectPerformanceChart',
+        ];
+
+        // Reports are a manager/admin concern (team workload / project performance are
+        // oversight tools) — employees don't get these 4 pages, matching the ratings
+        // viewAll/manageAll tiering convention already used elsewhere in this seeder.
+        $reportPagePermissions = [
+            'View:TaskCompletionReport',
+            'View:TeamWorkloadReport',
+            'View:OverdueTasksReport',
+            'View:ProjectPerformanceReport',
         ];
 
         $rolePermissions = [
@@ -76,6 +94,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'ViewActivity:Task', 'ViewActivity:Project',
                 'ViewAny:Rating', 'View:Rating', 'Create:Rating', 'Update:Rating', 'Delete:Rating', 'DeleteAny:Rating',
                 'View:Dashboard', 'View:PerformanceDashboard', 'View:TenantPerformanceDashboard',
+                ...$reportPagePermissions,
                 ...$widgetPermissions,
             ],
             'project_manager' => [
@@ -88,6 +107,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'ViewActivity:Task', 'ViewActivity:Project',
                 'ViewAny:Rating', 'View:Rating', 'Create:Rating', 'Update:Rating',
                 'View:Dashboard', 'View:PerformanceDashboard', 'View:TenantPerformanceDashboard',
+                ...$reportPagePermissions,
                 ...$widgetPermissions,
             ],
             'employee' => [
