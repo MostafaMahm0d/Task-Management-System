@@ -8,6 +8,7 @@ use App\Models\Task;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class TaskActivitiesTable
@@ -60,7 +61,15 @@ class TaskActivitiesTable
                         ->size('sm'),
                 ])->space(2),
             ])
-            ->filters([])
+            ->filters([
+                SelectFilter::make('project')
+                    ->relationship('project', 'name')
+                    ->searchable(),
+
+                SelectFilter::make('assignee')
+                    ->relationship('assignee', 'name')
+                    ->searchable(),
+            ])
             ->recordActions([])
             ->toolbarActions([]);
     }

@@ -7,6 +7,7 @@ use App\Models\Project;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ActivitiesTable
@@ -55,7 +56,11 @@ class ActivitiesTable
                         ->size('sm'),
                 ])->space(2),
             ])
-            ->filters([])
+            ->filters([
+                SelectFilter::make('owner')
+                    ->relationship('owner', 'name')
+                    ->searchable(),
+            ])
             ->recordActions([])
             ->toolbarActions([]);
     }

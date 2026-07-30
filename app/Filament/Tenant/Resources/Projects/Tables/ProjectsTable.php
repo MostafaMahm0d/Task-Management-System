@@ -10,6 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Relaticle\Comments\Filament\Actions\CommentsTableAction;
 
 class ProjectsTable
 {
@@ -45,6 +46,7 @@ class ProjectsTable
                 ViewAction::make(),
                 EditAction::make(),
                 ViewActivityAction::make(),
+                CommentsTableAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

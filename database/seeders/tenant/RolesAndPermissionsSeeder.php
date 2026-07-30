@@ -22,6 +22,12 @@ class RolesAndPermissionsSeeder extends Seeder
     public static function customPermissions(): array
     {
         return [
+            // The super_admin role itself is NOT created here — TenantsDatabaseSeeder
+            // runs ShieldSeeder after this seeder, which creates super_admin and syncs
+            // it to every permission that exists at that point (including everything
+            // this seeder just created). This entry exists purely so RoleObserver has
+            // a list to re-grant if super_admin's custom permissions are ever dropped
+            // via Shield's Role edit form, same as the other three roles below.
             'super_admin' => [
                 'project.create', 'task.assign', 'task.move', 'report.view', 'activity.viewAll',
                 'project.manageAll', 'task.manageAll', 'rating.viewAll', 'rating.manageAll', 'report.export',
@@ -69,6 +75,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'View:OverdueByProjectChart',
             'View:ProjectPerformanceOverview',
             'View:ProjectPerformanceChart',
+            'View:ProjectOverviewWidget',
         ];
 
         // Reports are a manager/admin concern (team workload / project performance are

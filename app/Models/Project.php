@@ -10,14 +10,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Relaticle\Comments\Concerns\HasComments;
+use Relaticle\Comments\Contracts\Commentable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 #[Fillable(['name', 'description', 'owner_id'])]
-class Project extends Model
+class Project extends Model implements Commentable
 {
     /** @use HasFactory<ProjectFactory> */
-    use HasFactory, LogsActivity;
+    use HasComments, HasFactory, LogsActivity;
 
     public function owner(): BelongsTo
     {
