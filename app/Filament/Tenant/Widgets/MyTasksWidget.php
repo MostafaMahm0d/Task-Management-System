@@ -28,8 +28,7 @@ class MyTasksWidget extends TableWidget
             ->recordUrl(fn (Task $record): string => TaskResource::getUrl('view', ['project' => $record->project, 'record' => $record]))
             ->columns([
                 TextColumn::make('title')
-                    ->searchable()
-                    ->url(fn (Task $record): string => TaskResource::getUrl('view', ['project' => $record->project, 'record' => $record])),
+                    ->searchable(),
 
                 TextColumn::make('project.name')
                     ->label('Project'),

@@ -48,8 +48,7 @@ class DashboardOverview extends StatsOverviewWidget
             Stat::make('Total Tasks', Task::query()->count())
                 ->description('Across the whole tenant')
                 ->icon(Heroicon::OutlinedClipboardDocumentList)
-                ->color('info')
-                ->url(ProjectResource::getUrl('index')),
+                ->color('info'),
 
             Stat::make('Overdue Tasks', $overdueCount)
                 ->description('Across all projects')
@@ -93,8 +92,7 @@ class DashboardOverview extends StatsOverviewWidget
 
             Stat::make('My Open Tasks', (clone $myOpenTasks)->count())
                 ->icon(Heroicon::OutlinedClipboardDocumentList)
-                ->color('info')
-                ->url(ProjectResource::getUrl('index')),
+                ->color('info'),
 
             Stat::make('Overdue Tasks', $overdueCount)
                 ->icon(Heroicon::OutlinedExclamationTriangle)
