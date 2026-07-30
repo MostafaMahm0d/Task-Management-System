@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\tenant;
 
+use App\Enums\TaskPriority;
 use App\Models\Label;
 use App\Models\Project;
 use App\Models\ProjectMember;
@@ -82,7 +83,7 @@ class DemoDataSeeder extends Seeder
                 'title' => "Define scope for {$blueprint['name']}",
                 'description' => 'Gather requirements and confirm acceptance criteria with stakeholders.',
                 'status_id' => $todoStatus->id,
-                'priority' => Task::PRIORITY_LOW,
+                'priority' => TaskPriority::Low,
                 'assignee_id' => null,
                 'reporter_id' => $owner->id,
                 'due_date' => null,
@@ -95,7 +96,7 @@ class DemoDataSeeder extends Seeder
                 'title' => 'Fix critical regression reported by QA',
                 'description' => 'Regression blocks the release candidate; needs a same-day fix.',
                 'status_id' => $inProgressStatus->id,
-                'priority' => Task::PRIORITY_URGENT,
+                'priority' => TaskPriority::Urgent,
                 'assignee_id' => $assignableUsers->random()->id,
                 'reporter_id' => $owner->id,
                 'due_date' => now()->subDays(3),
@@ -108,7 +109,7 @@ class DemoDataSeeder extends Seeder
                 'title' => 'Polish UI for the new settings page',
                 'description' => 'Address feedback from design review.',
                 'status_id' => $inReviewStatus->id,
-                'priority' => Task::PRIORITY_MEDIUM,
+                'priority' => TaskPriority::Medium,
                 'assignee_id' => $assignableUsers->random()->id,
                 'reporter_id' => $projectManagerMember->id,
                 'due_date' => now()->addDays(2),
@@ -121,7 +122,7 @@ class DemoDataSeeder extends Seeder
                 'title' => 'Set up CI pipeline',
                 'description' => 'Automated tests and linting on every pull request.',
                 'status_id' => $doneStatus->id,
-                'priority' => Task::PRIORITY_HIGH,
+                'priority' => TaskPriority::High,
                 'assignee_id' => $assignableUsers->random()->id,
                 'reporter_id' => $owner->id,
                 'due_date' => now()->subDays(10),
@@ -134,7 +135,7 @@ class DemoDataSeeder extends Seeder
                 'title' => 'Evaluate third-party analytics vendor',
                 'description' => 'Deprioritized after budget review.',
                 'status_id' => $cancelledStatus->id,
-                'priority' => Task::PRIORITY_LOW,
+                'priority' => TaskPriority::Low,
                 'assignee_id' => null,
                 'reporter_id' => $owner->id,
                 'due_date' => null,

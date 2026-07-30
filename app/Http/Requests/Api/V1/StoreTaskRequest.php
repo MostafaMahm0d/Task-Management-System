@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Api\V1;
 
+use App\Enums\TaskPriority;
 use App\Models\Project;
 use App\Models\Task;
 use Closure;
@@ -40,9 +41,7 @@ class StoreTaskRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'status_id' => ['nullable', Rule::exists('statuses', 'id')],
-            'priority' => ['nullable', Rule::in([
-                Task::PRIORITY_LOW, Task::PRIORITY_MEDIUM, Task::PRIORITY_HIGH, Task::PRIORITY_URGENT,
-            ])],
+            'priority' => ['nullable', Rule::enum(TaskPriority::class)],
             'assignee_id' => [
                 'nullable',
                 Rule::exists('users', 'id'),
@@ -58,6 +57,25 @@ class StoreTaskRequest extends FormRequest
             'estimated_hours' => ['nullable', 'numeric', 'min:0'],
             'labels' => ['nullable', 'array'],
             'labels.*' => [Rule::exists('labels', 'id')],
+            'parent_task_id' => [
+                'nullable',
+                Rule::exists('tasks', 'id'),
+                function (string $attribute, mixed $value, Closure $fail) {
+                    $parent = Task::find($value);
+
+                    if (! $parent) {
+                        return;
+                    }
+
+                    if ((int) $parent->project_id !== (int) $this->input('project_id')) {
+                        $fail('The parent task must belong to the same project.');
+                    }
+
+                    if ($parent->isSubtask()) {
+                        $fail('A subtask cannot be nested under another subtask.');
+                    }
+                },
+            ],
         ];
     }
 }

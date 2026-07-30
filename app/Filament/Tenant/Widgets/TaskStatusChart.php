@@ -2,13 +2,10 @@
 
 namespace App\Filament\Tenant\Widgets;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
 use App\Models\Status;
 use App\Models\Task;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Support\RawJs;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Js;
 
 class TaskStatusChart extends ChartWidget
 {
@@ -54,39 +51,6 @@ class TaskStatusChart extends ChartWidget
         ];
     }
 
-    protected function getOptions(): RawJs
-    {
-        $fallbackUrl = $this->isAdmin() ? TaskResource::getUrl('index') : TaskResource::getUrl('my-tasks');
-
-        $urlsByLabel = collect($this->getStatusCounts())
-            ->mapWithKeys(fn (array $row): array => [$row['name'] => $this->tasksUrlForStatus($row['id'])])
-            ->all();
-
-        // Js::from() safely escapes the data as a JSON.parse('...') expression with no bare
-        // double quotes, so it can be embedded in the (double-quoted) x-data HTML attribute.
-        $urlsExpression = Js::from($urlsByLabel)->toHtml();
-        $fallbackUrlExpression = Js::from($fallbackUrl)->toHtml();
-
-        return RawJs::make(<<<JS
-        {
-            onClick: (event, elements, chart) => {
-                const urls = {$urlsExpression};
-                const label = elements.length > 0 ? chart.data.labels[elements[0].index] : null;
-                window.location.href = (label && urls[label]) ? urls[label] : {$fallbackUrlExpression};
-            },
-            onHover: (event) => { event.native.target.style.cursor = 'pointer'; },
-        }
-        JS);
-    }
-
-    private function tasksUrlForStatus(int $statusId): string
-    {
-        $parameters = ['filters' => ['status_id' => ['values' => [$statusId]]]];
-
-        return $this->isAdmin()
-            ? TaskResource::getUrl('index', $parameters)
-            : TaskResource::getUrl('my-tasks', $parameters);
-    }
 
     private function isAdmin(): bool
     {

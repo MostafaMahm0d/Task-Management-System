@@ -8,11 +8,13 @@ use App\Filament\Tenant\Resources\Projects\Pages\ListProjects;
 use App\Filament\Tenant\Resources\Projects\Pages\ViewProject;
 use App\Filament\Tenant\Resources\Projects\RelationManagers\MembersRelationManager;
 use App\Filament\Tenant\Resources\Projects\RelationManagers\TasksRelationManager;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Filament\Tenant\Resources\Projects\Schemas\ProjectForm;
 use App\Filament\Tenant\Resources\Projects\Schemas\ProjectInfolist;
 use App\Filament\Tenant\Resources\Projects\Tables\ProjectsTable;
 use App\Models\Project;
 use BackedEnum;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -61,7 +63,7 @@ class ProjectResource extends Resource
     {
         return [
             MembersRelationManager::class,
-            TasksRelationManager::class,
+            'tasks' => TasksRelationManager::class,
         ];
     }
 
@@ -73,5 +75,27 @@ class ProjectResource extends Resource
             'view' => ViewProject::route('/{record}'),
             'edit' => EditProject::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationItems(): array
+    {
+        $items = parent::getNavigationItems();
+
+        if (! $user = auth()->user()) {
+            return $items;
+        }
+
+        $projects = static::getEloquentQuery()->orderBy('name')->get();
+
+        foreach ($projects as $project) {
+            $items[] = NavigationItem::make($project->name)
+                ->group('My Work')
+                ->icon(Heroicon::OutlinedFolder)
+                ->sort(static::getNavigationSort())
+                ->isActiveWhen(fn (): bool => (string) request()->route('project') === (string) $project->getKey())
+                ->url(fn (): string => TaskResource::getUrl('index', ['project' => $project]));
+        }
+
+        return $items;
     }
 }

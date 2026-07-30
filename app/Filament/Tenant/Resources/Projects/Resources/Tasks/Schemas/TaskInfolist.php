@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\Tasks\Schemas;
+namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\Schemas;
 
 use App\Models\Task;
 use Filament\Infolists\Components\IconEntry;
@@ -25,13 +25,7 @@ class TaskInfolist
                             ->color(fn (Task $record): string => $record->status->color),
 
                         TextEntry::make('priority')
-                            ->badge()
-                            ->color(fn (string $state): string => match ($state) {
-                                Task::PRIORITY_URGENT => 'danger',
-                                Task::PRIORITY_HIGH => 'warning',
-                                Task::PRIORITY_LOW => 'gray',
-                                default => 'info',
-                            }),
+                            ->badge(),
 
                         IconEntry::make('is_blocked')
                             ->label('Blocked')
@@ -81,9 +75,19 @@ class TaskInfolist
                             ->badge()
                             ->color('gray')
                             ->placeholder('No dependencies'),
+
+                        TextEntry::make('parent.title')
+                            ->label('Parent task')
+                            ->placeholder('Top-level task'),
+
+                        TextEntry::make('subtasks.title')
+                            ->label('Subtasks')
+                            ->badge()
+                            ->color('gray')
+                            ->placeholder('No subtasks'),
                     ])
                     ->columns(2)
-                    ->collapsed(fn (Task $record): bool => $record->labels->isEmpty() && $record->dependsOn->isEmpty()),
+                    ->collapsed(fn (Task $record): bool => $record->labels->isEmpty() && $record->dependsOn->isEmpty() && $record->subtasks->isEmpty()),
             ]);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Pages;
 
+use App\Enums\TaskPriority;
 use App\Exports\OverdueTasksExport;
 use App\Filament\Tenant\Pages\Concerns\InteractsWithReportCache;
 use App\Filament\Tenant\Widgets\OverdueByProjectChart;
@@ -103,7 +104,7 @@ class OverdueTasksReport extends Page implements HasTable
                 'assignee' => $task->assignee?->name ?? 'Unassigned',
                 'due_date' => $task->due_date->toDateString(),
                 'days_overdue' => (int) now()->diffInDays($task->due_date),
-                'priority' => $task->priority,
+                'priority' => $task->priority->getLabel(),
                 'status' => $task->status?->name ?? '—',
             ])
             ->all();
@@ -142,12 +143,6 @@ class OverdueTasksReport extends Page implements HasTable
 
                 TextColumn::make('priority')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        Task::PRIORITY_URGENT => 'danger',
-                        Task::PRIORITY_HIGH => 'warning',
-                        Task::PRIORITY_MEDIUM => 'info',
-                        default => 'gray',
-                    })
                     ->sortable(),
 
                 TextColumn::make('status.name')
@@ -165,12 +160,7 @@ class OverdueTasksReport extends Page implements HasTable
                     ->searchable(),
 
                 SelectFilter::make('priority')
-                    ->options([
-                        Task::PRIORITY_URGENT => 'Urgent',
-                        Task::PRIORITY_HIGH => 'High',
-                        Task::PRIORITY_MEDIUM => 'Medium',
-                        Task::PRIORITY_LOW => 'Low',
-                    ]),
+                    ->options(TaskPriority::class),
             ]);
     }
 }

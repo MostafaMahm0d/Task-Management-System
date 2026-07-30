@@ -5,6 +5,7 @@ namespace App\Filament\Tenant\Resources\Projects\RelationManagers;
 use App\Models\ProjectMember;
 use App\Models\User;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
@@ -51,16 +52,18 @@ class MembersRelationManager extends RelationManager
                     ]),
             ])
             ->recordActions([
-                Action::make('editRole')
-                    ->label('Edit role')
-                    ->schema([
-                        Select::make('role')
-                            ->options(ProjectMember::roleOptions())
-                            ->required(),
-                    ])
-                    ->fillForm(fn (User $record): array => ['role' => $record->pivot->role])
-                    ->action(fn (User $record, array $data) => $record->pivot->update(['role' => $data['role']])),
-                DetachAction::make(),
+                ActionGroup::make([
+                    Action::make('editRole')
+                        ->label('Edit role')
+                        ->schema([
+                            Select::make('role')
+                                ->options(ProjectMember::roleOptions())
+                                ->required(),
+                        ])
+                        ->fillForm(fn (User $record): array => ['role' => $record->pivot->role])
+                        ->action(fn (User $record, array $data) => $record->pivot->update(['role' => $data['role']])),
+                    DetachAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

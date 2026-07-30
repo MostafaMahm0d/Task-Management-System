@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\Tasks\Pages;
+namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;

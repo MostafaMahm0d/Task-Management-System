@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\NotificationSetting;
 use App\Models\Task;
 use App\Models\User;
@@ -66,7 +66,7 @@ class TaskCompletedNotification extends Notification implements ShouldQueue
 
     private function taskUrl(): string
     {
-        $path = TaskResource::getUrl('view', ['record' => $this->task], isAbsolute: false, panel: 'app');
+        $path = TaskResource::getUrl('view', ['project' => $this->task->project, 'record' => $this->task], isAbsolute: false, panel: 'app');
 
         return tenant()->url($path);
     }

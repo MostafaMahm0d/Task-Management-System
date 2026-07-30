@@ -3,7 +3,7 @@
 namespace App\Filament\Tenant\Widgets;
 
 use App\Filament\Tenant\Resources\Projects\ProjectResource;
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Activity;
 use App\Models\Project;
 use App\Models\Task;
@@ -58,7 +58,7 @@ class RecentActivity extends TableWidget
 
                 return match ($record->subject_type) {
                     Project::class => ProjectResource::getUrl('view', ['record' => $record->subject]),
-                    Task::class => TaskResource::getUrl('view', ['record' => $record->subject]),
+                    Task::class => TaskResource::getUrl('view', ['project' => $record->subject->project, 'record' => $record->subject]),
                     default => null,
                 };
             })

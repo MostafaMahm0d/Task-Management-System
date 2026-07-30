@@ -2,7 +2,7 @@
 
 namespace App\Filament\Tenant\Widgets;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Task;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Support\Icons\Heroicon;
@@ -27,7 +27,7 @@ class UpcomingDeadlines extends TableWidget
                 ->whereNotNull('due_date')
                 ->whereBetween('due_date', [now()->startOfDay(), now()->addDays(7)->endOfDay()])
                 ->whereHas('status', fn ($query) => $query->where('is_completed', false)->where('is_cancelled', false)))
-            ->recordUrl(fn (Task $record): string => TaskResource::getUrl('view', ['record' => $record]))
+            ->recordUrl(fn (Task $record): string => TaskResource::getUrl('view', ['project' => $record->project, 'record' => $record]))
             ->columns([
                 TextColumn::make('title')
                     ->searchable(),

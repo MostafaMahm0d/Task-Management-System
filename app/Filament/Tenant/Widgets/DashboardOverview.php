@@ -2,10 +2,10 @@
 
 namespace App\Filament\Tenant\Widgets;
 
+use App\Enums\TaskPriority;
 use App\Filament\Tenant\Resources\Projects\ProjectResource;
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Project;
-use App\Models\Status;
 use App\Models\Task;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Support\Icons\Heroicon;
@@ -49,28 +49,21 @@ class DashboardOverview extends StatsOverviewWidget
                 ->description('Across the whole tenant')
                 ->icon(Heroicon::OutlinedClipboardDocumentList)
                 ->color('info')
-                ->url(TaskResource::getUrl('index')),
+                ->url(ProjectResource::getUrl('index')),
 
             Stat::make('Overdue Tasks', $overdueCount)
                 ->description('Across all projects')
                 ->icon(Heroicon::OutlinedExclamationTriangle)
                 ->color($overdueCount > 0 ? 'danger' : 'success')
-                ->url(TaskResource::getUrl('index', [
-                    'filters' => ['overdue' => ['isActive' => true]],
-                ])),
+                ->url(ProjectResource::getUrl('index')),
 
             Stat::make('Urgent / High Priority', (clone $openTasks)
-                ->whereIn('priority', [Task::PRIORITY_URGENT, Task::PRIORITY_HIGH])
+                ->whereIn('priority', [TaskPriority::Urgent, TaskPriority::High])
                 ->count())
                 ->description('Across all projects')
                 ->icon(Heroicon::OutlinedFlag)
                 ->color('warning')
-                ->url(TaskResource::getUrl('index', [
-                    'filters' => [
-                        'priority' => ['values' => [Task::PRIORITY_URGENT, Task::PRIORITY_HIGH]],
-                        'status_id' => ['values' => $this->openStatusIds()],
-                    ],
-                ])),
+                ->url(ProjectResource::getUrl('index')),
         ];
     }
 
@@ -101,36 +94,20 @@ class DashboardOverview extends StatsOverviewWidget
             Stat::make('My Open Tasks', (clone $myOpenTasks)->count())
                 ->icon(Heroicon::OutlinedClipboardDocumentList)
                 ->color('info')
-                ->url(TaskResource::getUrl('my-tasks', [
-                    'filters' => ['status_id' => ['values' => $this->openStatusIds()]],
-                ])),
+                ->url(ProjectResource::getUrl('index')),
 
             Stat::make('Overdue Tasks', $overdueCount)
                 ->icon(Heroicon::OutlinedExclamationTriangle)
                 ->color($overdueCount > 0 ? 'danger' : 'success')
-                ->url(TaskResource::getUrl('my-tasks', [
-                    'filters' => ['overdue' => ['isActive' => true]],
-                ])),
+                ->url(ProjectResource::getUrl('index')),
 
-            Stat::make('Urgent / High Priority', (clone $myOpenTasks)
-                ->whereIn('priority', [Task::PRIORITY_URGENT, Task::PRIORITY_HIGH])
+            Stat::make('Urgent / High Priority', (clone $myTasks)
+                ->whereIn('priority', [TaskPriority::Urgent, TaskPriority::High])
+                ->whereHas('status', fn ($query) => $query->where('is_completed', false))
                 ->count())
                 ->icon(Heroicon::OutlinedFlag)
                 ->color('warning')
-                ->url(TaskResource::getUrl('my-tasks', [
-                    'filters' => [
-                        'priority' => ['values' => [Task::PRIORITY_URGENT, Task::PRIORITY_HIGH]],
-                        'status_id' => ['values' => $this->openStatusIds()],
-                    ],
-                ])),
+                ->url(ProjectResource::getUrl('index')),
         ];
-    }
-
-    /**
-     * @return array<int>
-     */
-    private function openStatusIds(): array
-    {
-        return Status::query()->where('is_completed', false)->where('is_cancelled', false)->pluck('id')->all();
     }
 }

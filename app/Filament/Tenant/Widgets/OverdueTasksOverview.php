@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Widgets;
 
+use App\Enums\TaskPriority;
 use App\Filament\Tenant\Pages\Concerns\InteractsWithReportCache;
 use App\Models\Task;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
@@ -34,7 +35,7 @@ class OverdueTasksOverview extends StatsOverviewWidget
                 ->icon(Heroicon::OutlinedClock)
                 ->color('warning'),
 
-            Stat::make('Urgent / High Priority', ($summary['by_priority'][Task::PRIORITY_URGENT] ?? 0) + ($summary['by_priority'][Task::PRIORITY_HIGH] ?? 0))
+            Stat::make('Urgent / High Priority', ($summary['by_priority'][TaskPriority::Urgent->value] ?? 0) + ($summary['by_priority'][TaskPriority::High->value] ?? 0))
                 ->icon(Heroicon::OutlinedFlag)
                 ->color('danger'),
         ];

@@ -3,6 +3,7 @@
 namespace App\Filament\Tenant\Resources\Projects\Tables;
 
 use App\Filament\Tenant\Actions\ViewActivityAction;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -43,10 +44,12 @@ class ProjectsTable
                     ->searchable(),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                ViewActivityAction::make(),
-                CommentsTableAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    ViewActivityAction::make(),
+                    CommentsTableAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

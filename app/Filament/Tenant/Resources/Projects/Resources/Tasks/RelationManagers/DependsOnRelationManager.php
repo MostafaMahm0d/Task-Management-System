@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\Tasks\RelationManagers;
+namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\RelationManagers;
 
 use App\Models\Task;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DetachAction;
@@ -43,7 +44,9 @@ class DependsOnRelationManager extends RelationManager
                         ->whereKeyNot($this->getOwnerRecord()->getKey())),
             ])
             ->recordActions([
-                DetachAction::make(),
+                ActionGroup::make([
+                    DetachAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

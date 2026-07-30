@@ -4,6 +4,7 @@ namespace App\Filament\Central\Resources\Tenants\Tables;
 
 use App\Filament\Central\Resources\Tenants\Actions\ToggleTenantSuspensionAction;
 use App\Models\Tenant;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -44,9 +45,11 @@ class TenantsTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                ToggleTenantSuspensionAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    ToggleTenantSuspensionAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

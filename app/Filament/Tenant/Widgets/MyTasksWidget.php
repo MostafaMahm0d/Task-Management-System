@@ -2,10 +2,9 @@
 
 namespace App\Filament\Tenant\Widgets;
 
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Task;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -26,10 +25,11 @@ class MyTasksWidget extends TableWidget
             ->query(fn (): Builder => Task::query()
                 ->when(! $isAdmin, fn (Builder $query) => $query->where('assignee_id', auth()->id()))
                 ->whereHas('status', fn ($query) => $query->where('is_completed', false)->where('is_cancelled', false)))
-            ->recordUrl(fn (Task $record): string => TaskResource::getUrl('view', ['record' => $record]))
+            ->recordUrl(fn (Task $record): string => TaskResource::getUrl('view', ['project' => $record->project, 'record' => $record]))
             ->columns([
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn (Task $record): string => TaskResource::getUrl('view', ['project' => $record->project, 'record' => $record])),
 
                 TextColumn::make('project.name')
                     ->label('Project'),
@@ -45,13 +45,7 @@ class MyTasksWidget extends TableWidget
                     ->color(fn (Task $record): string => $record->status->color),
 
                 TextColumn::make('priority')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        Task::PRIORITY_URGENT => 'danger',
-                        Task::PRIORITY_HIGH => 'warning',
-                        Task::PRIORITY_LOW => 'gray',
-                        default => 'info',
-                    }),
+                    ->badge(),
 
                 TextColumn::make('due_date')
                     ->date()
@@ -59,11 +53,6 @@ class MyTasksWidget extends TableWidget
                     ->color(fn (Task $record): ?string => $record->due_date?->isPast() ? 'danger' : null),
             ])
             ->defaultSort('due_date')
-            ->paginated([5, 10])
-            ->headerActions([
-                Action::make('viewAll')
-                    ->label('View all')
-                    ->url(fn (): string => $isAdmin ? TaskResource::getUrl('index') : TaskResource::getUrl('my-tasks')),
-            ]);
+            ->paginated([5, 10]);
     }
 }

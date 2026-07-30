@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaskPriority;
 use Database\Factories\TaskFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -9,28 +10,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Relaticle\Comments\Concerns\HasComments;
 use Relaticle\Comments\Contracts\Commentable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
-#[Fillable(['project_id', 'title', 'description', 'status_id', 'priority', 'assignee_id', 'reporter_id', 'due_date', 'estimated_hours'])]
+#[Fillable(['project_id', 'parent_task_id', 'title', 'description', 'status_id', 'priority', 'assignee_id', 'reporter_id', 'due_date', 'estimated_hours'])]
 class Task extends Model implements Commentable
 {
     /** @use HasFactory<TaskFactory> */
     use HasComments, HasFactory, LogsActivity;
 
-    public const PRIORITY_LOW = 'low';
-
-    public const PRIORITY_MEDIUM = 'medium';
-
-    public const PRIORITY_HIGH = 'high';
-
-    public const PRIORITY_URGENT = 'urgent';
-
     protected function casts(): array
     {
         return [
+            'priority' => TaskPriority::class,
             'due_date' => 'date',
             'estimated_hours' => 'decimal:2',
             'overdue_notified_at' => 'datetime',
@@ -40,6 +35,21 @@ class Task extends Model implements Commentable
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Task::class, 'parent_task_id');
+    }
+
+    public function subtasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'parent_task_id');
+    }
+
+    public function isSubtask(): bool
+    {
+        return $this->parent_task_id !== null;
     }
 
     public function status(): BelongsTo
@@ -180,7 +190,7 @@ class Task extends Model implements Commentable
     {
         return LogOptions::defaults()
             ->useLogName('task')
-            ->logOnly(['title', 'status_id', 'priority', 'assignee_id', 'due_date'])
+            ->logOnly(['title', 'status_id', 'priority', 'assignee_id', 'due_date', 'parent_task_id'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }
@@ -217,11 +227,17 @@ class Task extends Model implements Commentable
         }
 
         if ($this->wasChanged('priority')) {
-            $parts[] = "changed priority to {$this->priority}";
+            $parts[] = "changed priority to {$this->priority->getLabel()}";
         }
 
         if ($this->wasChanged('due_date')) {
             $parts[] = 'changed the due date';
+        }
+
+        if ($this->wasChanged('parent_task_id')) {
+            $parts[] = $this->parent
+                ? "made this a subtask of \"{$this->parent->title}\""
+                : 'removed the parent task';
         }
 
         return $parts === [] ? 'updated the task' : implode(' and ', $parts);

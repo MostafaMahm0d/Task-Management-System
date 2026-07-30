@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TaskPriority;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -85,7 +86,7 @@ class User extends Authenticatable implements Commentator, MustVerifyEmail
             ->withCount(['assignedTasks as open_tasks_count' => $openTasks])
             ->withCount(['assignedTasks as overdue_tasks_count' => fn (Builder $query) => $query->overdue()])
             ->withCount(['assignedTasks as urgent_tasks_count' => fn (Builder $query) => $openTasks($query)
-                ->whereIn('priority', [Task::PRIORITY_URGENT, Task::PRIORITY_HIGH])]);
+                ->whereIn('priority', [TaskPriority::Urgent, TaskPriority::High])]);
     }
 
     /**

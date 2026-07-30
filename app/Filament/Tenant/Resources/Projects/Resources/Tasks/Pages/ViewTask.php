@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Tenant\Resources\Tasks\Pages;
+namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages;
 
 use App\Filament\Tenant\Actions\ViewActivityAction;
-use App\Filament\Tenant\Resources\Tasks\TaskResource;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Relaticle\Comments\Filament\Actions\CommentsAction;
