@@ -7,12 +7,14 @@ use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Task;
 use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Livewire;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Livewire\Component;
+use Relaticle\Comments\Filament\Actions\CommentsAction;
 
 class QuickViewAction 
 {
@@ -28,6 +30,10 @@ class QuickViewAction
             ->modalSubmitAction(false)
             ->modalCancelActionLabel('Close')
             ->schema(fn (Task $record, Component $livewire): array => [
+                Actions::make([
+                    CommentsAction::make()
+                        ->overlayParentActions(),
+                ])->alignEnd(),
                 ...TaskInfolist::components(),
                 ...self::getRelationManagerComponents($record, $livewire::class),
             ]);
