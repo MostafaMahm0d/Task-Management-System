@@ -10,6 +10,7 @@ use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages\ListTasks;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages\ViewTask;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\RelationManagers\DependsOnRelationManager;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\RelationManagers\SubtasksRelationManager;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\RelationManagers\TimeLogsRelationManager;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Schemas\TaskForm;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Schemas\TaskInfolist;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Tables\TasksTable;
@@ -60,6 +61,7 @@ class TaskResource extends Resource
         return [
             DependsOnRelationManager::class,
             SubtasksRelationManager::class,
+            TimeLogsRelationManager::class,
         ];
     }
 
