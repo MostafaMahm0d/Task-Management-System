@@ -6,8 +6,8 @@ use App\Enums\TaskPriority;
 use App\Models\Status;
 use App\Models\User;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
@@ -29,8 +29,7 @@ class TaskForm
                             ->maxLength(255)
                             ->columnSpanFull(),
 
-                        Textarea::make('description')
-                            ->rows(4)
+                        RichEditor::make('description')
                             ->columnSpanFull(),
                     ]),
 

@@ -10,8 +10,8 @@ use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -83,12 +83,12 @@ class TaskInfolist
                         ])),
 
                     TextEntry::make('description')
+                        ->html()
                         ->placeholder('No description provided.')
                         ->columnSpanFull()
                         ->hintAction(self::quickEditAction('description', [
-                            Textarea::make('description')
-                                ->rows(4),
-                        ], width: Width::Large)),
+                            RichEditor::make('description'),
+                        ], width: Width::ThreeExtraLarge)),
                 ])
                 ->columns(4),
 
@@ -127,8 +127,18 @@ class TaskInfolist
                                 ->numeric()
                                 ->suffix('hrs'),
                         ], heading: 'Edit estimate')),
+
+                    TextEntry::make('logged_hours')
+                        ->label('Logged')
+                        ->state(function (Task $record): ?string {
+                            $totalHours = $record->totalLoggedHours();
+
+                            return $totalHours > 0 ? number_format($totalHours, 2) : null;
+                        })
+                        ->suffix(' hrs')
+                        ->placeholder('No time logged'),
                 ])
-                ->columns(3),
+                ->columns(4),
 
             Section::make('Labels & dependencies')
                 ->icon(Heroicon::OutlinedTag)

@@ -72,6 +72,16 @@ class Task extends Model implements Commentable
         return $this->belongsToMany(Label::class);
     }
 
+    public function timeLogs(): HasMany
+    {
+        return $this->hasMany(TimeLog::class);
+    }
+
+    public function totalLoggedHours(): float
+    {
+        return (float) $this->timeLogs()->sum('hours');
+    }
+
     public function dependsOn(): BelongsToMany
     {
         return $this->belongsToMany(Task::class, 'task_dependencies', 'task_id', 'depends_on_task_id')
