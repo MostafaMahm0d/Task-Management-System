@@ -3,6 +3,7 @@
 namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\Tables;
 
 use App\Enums\TaskPriority;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Actions\QuickViewAction;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\RelationManagers\SubtasksRelationManager;
 use App\Models\Task;
 use Filament\Actions\Action;
@@ -150,8 +151,10 @@ class TasksTable
                         blank: fn (Builder $query): Builder => $query,
                     ),
             ])
+            ->recordUrl(null)
             ->recordActions([
                 ActionGroup::make([
+                    QuickViewAction::make(),
                     ViewAction::make(),
                     EditAction::make(),
                     Action::make('addSubtask')

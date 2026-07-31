@@ -3,15 +3,13 @@
 namespace App\Filament\Tenant\Resources\Projects\Resources\Tasks\Pages;
 
 use App\Events\TaskStatusUpdated;
-use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Schemas\TaskInfolist;
+use App\Filament\Tenant\Resources\Projects\Resources\Tasks\Actions\QuickViewAction;
 use App\Filament\Tenant\Resources\Projects\Resources\Tasks\TaskResource;
 use App\Models\Status;
 use App\Models\Task;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Builder;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
 use Wezlo\FilamentKanban\KanbanBoard;
@@ -35,14 +33,7 @@ class Board extends ListRecords
                     'color' => $record->priority->getColor(),
                 ],
             ])
-            ->cardAction(
-                Action::make('viewTask')
-                    ->modalHeading(fn (Task $record): string => $record->title)
-                    ->schema(fn (Schema $schema): Schema => TaskInfolist::configure($schema))
-                    ->modalWidth(Width::SixExtraLarge)
-                    ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close')
-            )
+            ->cardAction(QuickViewAction::make())
             ->canMove(function (Task $record, string $fromStatusId, string $toStatusId): bool {
                 if (! auth()->user()?->can('task.move')) {
                     return false;
