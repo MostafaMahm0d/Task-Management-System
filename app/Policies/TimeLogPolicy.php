@@ -19,7 +19,7 @@ class TimeLogPolicy
 
     public function view(AuthUser $authUser, TimeLog $timeLog): bool
     {
-        return $authUser->hasRole('tenant_admin') || $timeLog->task->project->isMember($authUser);
+        return $authUser->can('task.manageAll') || $timeLog->task->project->isMember($authUser);
     }
 
     public function create(AuthUser $authUser): bool
@@ -29,11 +29,11 @@ class TimeLogPolicy
 
     public function update(AuthUser $authUser, TimeLog $timeLog): bool
     {
-        return $authUser->hasRole('tenant_admin') || $timeLog->user_id === $authUser->id;
+        return $authUser->can('task.manageAll') || $timeLog->user_id === $authUser->id;
     }
 
     public function delete(AuthUser $authUser, TimeLog $timeLog): bool
     {
-        return $authUser->hasRole('tenant_admin') || $timeLog->user_id === $authUser->id;
+        return $authUser->can('task.manageAll') || $timeLog->user_id === $authUser->id;
     }
 }

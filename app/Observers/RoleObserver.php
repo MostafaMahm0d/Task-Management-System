@@ -28,6 +28,14 @@ class RoleObserver
             return;
         }
 
+        // customPermissions() is tenant-specific data (rating.viewAll, task.manageAll,
+        // etc. only ever get created in a tenant database) — this event also fires for
+        // roles synced in the central database (e.g. central ShieldSeeder), where none
+        // of those permissions exist at all, so hasPermissionTo() would throw.
+        if (! tenancy()->initialized) {
+            return;
+        }
+
         $role = $event->model;
         $customPermissions = RolesAndPermissionsSeeder::customPermissions()[$role->name] ?? null;
 

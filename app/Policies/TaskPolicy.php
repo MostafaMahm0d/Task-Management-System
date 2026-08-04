@@ -19,7 +19,7 @@ class TaskPolicy
 
     public function view(AuthUser $authUser, Task $task): bool
     {
-        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+        return $authUser->can('task.manageAll') || $task->project->isMember($authUser);
     }
 
     public function create(AuthUser $authUser): bool
@@ -29,12 +29,12 @@ class TaskPolicy
 
     public function update(AuthUser $authUser, Task $task): bool
     {
-        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+        return $authUser->can('task.manageAll') || $task->project->isMember($authUser);
     }
 
     public function delete(AuthUser $authUser, Task $task): bool
     {
-        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+        return $authUser->can('task.manageAll') || $task->project->isMember($authUser);
     }
 
     public function deleteAny(AuthUser $authUser): bool
@@ -74,6 +74,6 @@ class TaskPolicy
 
     public function viewActivity(AuthUser $authUser, Task $task): bool
     {
-        return $authUser->hasRole('tenant_admin') || $task->project->isMember($authUser);
+        return $authUser->can('task.manageAll') || $task->project->isMember($authUser);
     }
 }
