@@ -10,6 +10,8 @@ use App\Models\Task;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\View;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Builder;
 use Wezlo\FilamentKanban\Concerns\HasKanbanBoard;
@@ -45,6 +47,14 @@ class Board extends ListRecords
             ->onRecordMoved(function (Task $record, string $fromStatusId, string $toStatusId) {
                 event(new TaskStatusUpdated($record, (int) $fromStatusId));
             });
+    }
+
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema->components([
+            View::make($this->getKanbanBoard()->getBoardView())->poll('30s'),
+        ]);
     }
 
     protected function getHeaderActions(): array
