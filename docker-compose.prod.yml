@@ -23,7 +23,7 @@ services:
 
     certbot:
         image: certbot/certbot
-        container_name: tms_certbot
+        profiles: ["certbot"]
         volumes:
             - ./docker/certbot/conf:/etc/letsencrypt
             - ./docker/certbot/www:/var/www/certbot
