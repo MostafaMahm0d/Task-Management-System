@@ -59,8 +59,7 @@ services:
         container_name: task_phpmyadmin
         restart: no
         ports:
-            - target: 80
-              published: "${FORWARD_PHPMYADMIN_PORT:-8080}"
+            - "${FORWARD_PHPMYADMIN_HOST:-0.0.0.0}:${FORWARD_PHPMYADMIN_PORT:-8080}:80"
         environment:
             PMA_HOST: mysql
             PMA_USER: root
