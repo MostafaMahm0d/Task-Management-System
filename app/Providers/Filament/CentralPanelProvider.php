@@ -2,8 +2,8 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Http\Middleware\Authenticate;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -24,12 +24,15 @@ class CentralPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        
+
         return $panel
             ->default()
             ->id('central')
             ->path('central')
+            ->viteTheme('resources/css/filament/central/theme.css')
             ->login()
+            ->passwordReset()
+            ->emailVerification()
             ->colors([
                 'primary' => Color::Slate,
             ])

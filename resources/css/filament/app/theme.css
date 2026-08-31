@@ -1,0 +1,12 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Tenant/**/*';
+@source '../../../../resources/views/filament/tenant/**/*';
+@source '../../../../vendor/wezlo/filament-kanban/resources/views/**/*';
+@source '../../../../vendor/relaticle/comments/resources/views/**/*.blade.php';
+
+/* Notifications are an audit trail — hide the per-item dismiss button inside the
+   database notifications modal only (regular toast notifications stay closeable). */
+#database-notifications .fi-no-notification-close-btn {
+    display: none;
+}

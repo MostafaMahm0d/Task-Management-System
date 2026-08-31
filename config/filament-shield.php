@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 use App\Filament\Central\Resources\Tenants\TenantResource;
-use App\Filament\Central\Resources\Users\UserResource;
+use App\Filament\Tenant\Resources\Projects\ProjectResource;
+use App\Filament\Tenant\Resources\Tasks\TaskResource;
 use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
 use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
@@ -179,9 +180,17 @@ return [
                 'update',
                 'delete',
             ],
-            TenantResource::class=>[
-                'CreateSuperAdmin:Tenant',
-            ]
+            TenantResource::class => [
+                'createSuperAdmin',
+                'manageUsers',
+                'suspend',
+            ],
+            TaskResource::class => [
+                'viewActivity',
+            ],
+            ProjectResource::class => [
+                'viewActivity',
+            ],
         ],
         'exclude' => [
             //
@@ -238,7 +247,8 @@ return [
     |
     */
 
-    'custom_permissions' => [],
+    'custom_permissions' => [
+    ],
 
     /*
     |--------------------------------------------------------------------------

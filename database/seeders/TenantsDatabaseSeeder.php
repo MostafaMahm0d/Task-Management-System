@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\tenant\NotificationSettingsSeeder;
+use Database\Seeders\tenant\RolesAndPermissionsSeeder;
 use Database\Seeders\tenant\ShieldSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,6 +18,8 @@ class TenantsDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            RolesAndPermissionsSeeder::class,
+            NotificationSettingsSeeder::class,
             ShieldSeeder::class,
         ]);
     }

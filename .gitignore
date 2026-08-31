@@ -3,6 +3,7 @@
 .env
 .env.backup
 .env.production
+/docker/certbot
 .phpactor.json
 .phpunit.result.cache
 /.codex
@@ -20,6 +21,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/tenants
 /vendor
 _ide_helper.php
 Homestead.json
