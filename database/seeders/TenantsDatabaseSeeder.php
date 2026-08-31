@@ -22,5 +22,6 @@ class TenantsDatabaseSeeder extends Seeder
             NotificationSettingsSeeder::class,
             ShieldSeeder::class,
         ]);
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }
