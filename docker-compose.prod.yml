@@ -19,7 +19,9 @@ services:
     phpmyadmin:
         restart: unless-stopped
         ports:
-            - "127.0.0.1:${FORWARD_PHPMYADMIN_PORT:-8080}:80"
+            - target: 80
+              published: "${FORWARD_PHPMYADMIN_PORT:-8080}"
+              host_ip: 127.0.0.1
 
     certbot:
         image: certbot/certbot
