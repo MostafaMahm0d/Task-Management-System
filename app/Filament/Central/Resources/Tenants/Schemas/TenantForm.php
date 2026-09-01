@@ -21,6 +21,7 @@ class TenantForm
 
                 TextInput::make('domain')
                     ->label('Domain')
+                    ->helperText('Enter a subdomain (e.g. "ts.ad") to have "'.parse_url(config('app.url'), PHP_URL_HOST).'" appended automatically, or a full custom domain.')
                     ->required()
                     ->maxLength(255),
             ]);
