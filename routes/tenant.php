@@ -28,9 +28,7 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
     PreventAccessIfTenantSuspended::class,
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is '.tenant('id');
-    });
+    Route::redirect('/', '/app');
 
     Route::get('/app/impersonate/{token}', function (string $token) {
         $central = DB::connection(config('tenancy.database.central_connection'));

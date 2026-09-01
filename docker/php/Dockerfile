@@ -27,6 +27,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN groupmod -g ${WWWGROUP} www-data && usermod -u ${WWWUSER} -g www-data www-data
 
+RUN mkdir -p /var/www/.config /var/www/.npm && chown -R www-data:www-data /var/www/.config /var/www/.npm
+
 WORKDIR /var/www/html
 
 USER www-data

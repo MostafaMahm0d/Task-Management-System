@@ -21,10 +21,21 @@ class CreateTenant extends CreateRecord
         $tenant = static::getModel()::create($data);
 
         if ($domain) {
-            $tenant->domains()->create(['domain' => $domain]);
+            $tenant->domains()->create(['domain' => static::normalizeDomain($domain)]);
         }
 
         return $tenant;
+    }
+
+    protected static function normalizeDomain(string $domain): string
+    {
+        $baseDomain = parse_url(config('app.url'), PHP_URL_HOST);
+
+        if (! $baseDomain || $domain === $baseDomain || str_ends_with($domain, ".{$baseDomain}")) {
+            return $domain;
+        }
+
+        return "{$domain}.{$baseDomain}";
     }
 
     protected function afterCreate(): void
@@ -46,7 +57,7 @@ class CreateTenant extends CreateRecord
 
         Notification::make()
             ->title('Tenant super admin email')
-            ->body("super-admin@{$tenant->id}.local")
+            ->body("super-admin@{$tenant->id}.tm")
             ->success()
             ->persistent()
             ->send();
