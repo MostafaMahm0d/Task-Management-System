@@ -16,10 +16,13 @@ services:
             - "5174:5173"
         volumes:
             - ./:/var/www/html
+        environment:
+            REDIS_HOST: redis
         networks:
             - task_network
         depends_on:
             - mysql
+            - redis
 
     webserver:
         image: nginx:alpine
@@ -69,10 +72,28 @@ services:
         depends_on:
             - mysql
 
+    redis:
+        image: redis:7-alpine
+        container_name: task_redis
+        restart: no
+        ports:
+            - "${FORWARD_REDIS_PORT:-6380}:6379"
+        volumes:
+            - task_redis_data:/data
+        networks:
+            - task_network
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
 networks:
     task_network:
         driver: bridge
 
 volumes:
     task_mysql_data:
+        driver: local
+    task_redis_data:
         driver: local

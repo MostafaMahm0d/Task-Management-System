@@ -19,6 +19,9 @@ services:
     phpmyadmin:
         restart: unless-stopped
 
+    redis:
+        restart: unless-stopped
+
     certbot:
         image: certbot/certbot
         profiles: ["certbot"]
