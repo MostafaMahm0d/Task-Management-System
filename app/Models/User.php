@@ -22,7 +22,8 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'email_verified_at'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements Commentator, FilamentUser, MustVerifyEmail
+class User extends Authenticatable implements Commentator, FilamentUser
+// , MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use CanComment, HasApiTokens, HasFactory, HasRoles, Notifiable;
