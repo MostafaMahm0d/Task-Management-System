@@ -24,6 +24,40 @@ services:
             - mysql
             - redis
 
+    queue:
+        image: task-management-system-app
+        container_name: task_queue
+        restart: unless-stopped
+        working_dir: /var/www/html
+        command: php artisan queue:work --tries=3 --sleep=3
+        volumes:
+            - ./:/var/www/html
+        environment:
+            REDIS_HOST: redis
+        networks:
+            - task_network
+        depends_on:
+            - app
+            - mysql
+            - redis
+
+    scheduler:
+        image: task-management-system-app
+        container_name: task_scheduler
+        restart: unless-stopped
+        working_dir: /var/www/html
+        command: php artisan schedule:work
+        volumes:
+            - ./:/var/www/html
+        environment:
+            REDIS_HOST: redis
+        networks:
+            - task_network
+        depends_on:
+            - app
+            - mysql
+            - redis
+
     webserver:
         image: nginx:alpine
         container_name: task_webserver
